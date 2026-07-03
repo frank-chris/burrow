@@ -1,6 +1,6 @@
 # burrow
 
-Persistent, named tunnel URLs for development teams — powered by Cloudflare.
+Persistent, named tunnel URLs for development teams - powered by Cloudflare.
 
 ```
 burrow up
@@ -26,7 +26,8 @@ Burrow gives you **named, persistent URLs** defined in a `.burrow.yaml` file com
 
 ### macOS (Homebrew)
 ```bash
-brew install frank-chris/tap/burrow
+brew tap frank-chris/tap
+brew install burrow
 ```
 
 ### Linux
@@ -43,7 +44,7 @@ sudo mv burrow /usr/local/bin/
 
 ### Windows (Scoop)
 ```powershell
-scoop bucket add burrow https://github.com/frank-chris/scoop-burrow
+scoop bucket add frank-chris https://github.com/frank-chris/scoop-burrow
 scoop install burrow
 ```
 

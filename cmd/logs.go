@@ -29,7 +29,6 @@ var (
 )
 
 func init() {
-	rootCmd.AddCommand(logsCmd)
 	logsCmd.Flags().BoolVarP(&flagFollow, "follow", "f", false, "Follow log output in real time")
 	logsCmd.Flags().IntVarP(&flagLines, "lines", "n", 20, "Number of past lines to show")
 }

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/frank-chris/burrow/internal/constants"
 	"github.com/frank-chris/burrow/internal/provider"
 )
 
@@ -134,6 +133,3 @@ func generateSecret() (string, error) {
 	return base64.StdEncoding.EncodeToString(b), nil
 }
 
-func tunnelPublicURL(tunnelID string) string {
-	return fmt.Sprintf("https://%s.%s", tunnelID, constants.CloudflareTunnelDomain)
-}

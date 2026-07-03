@@ -113,19 +113,7 @@ func latestVersion() (string, error) {
 }
 
 func platformBinaryName() string {
-	arch := runtime.GOARCH
-	switch arch {
-	case "amd64":
-		arch = "amd64"
-	case "arm64":
-		arch = "arm64"
-	case "386":
-		arch = "386"
-	case "arm":
-		arch = "arm"
-	}
-
-	name := fmt.Sprintf("cloudflared-%s-%s", runtime.GOOS, arch)
+	name := fmt.Sprintf("cloudflared-%s-%s", runtime.GOOS, runtime.GOARCH)
 	if runtime.GOOS == "windows" {
 		name += ".exe"
 	}

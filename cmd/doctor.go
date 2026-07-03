@@ -22,9 +22,6 @@ var doctorCmd = &cobra.Command{
 	RunE:  runDoctor,
 }
 
-func init() {
-	rootCmd.AddCommand(doctorCmd)
-}
 
 type check struct {
 	label  string

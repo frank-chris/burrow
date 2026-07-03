@@ -15,10 +15,6 @@ var downCmd = &cobra.Command{
 	RunE:  runDown,
 }
 
-func init() {
-	rootCmd.AddCommand(downCmd)
-}
-
 func runDown(cmd *cobra.Command, args []string) error {
 	tunnels, err := state.LoadPIDs()
 	if err != nil {

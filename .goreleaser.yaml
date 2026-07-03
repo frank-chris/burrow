@@ -34,6 +34,29 @@ archives:
 checksum:
   name_template: "checksums.txt"
 
+brews:
+  - name: burrow
+    repository:
+      owner: frank-chris
+      name: homebrew-tap
+      token: "{{ .Env.GH_PAT }}"
+    homepage: "https://github.com/frank-chris/burrow"
+    description: "Dev tunnel CLI wrapping Cloudflare Tunnel with team-friendly persistent URLs"
+    license: MIT
+    install: |
+      bin.install "burrow"
+    test: |
+      system "#{bin}/burrow", "--version"
+
+scoops:
+  - repository:
+      owner: frank-chris
+      name: scoop-burrow
+      token: "{{ .Env.GH_PAT }}"
+    homepage: "https://github.com/frank-chris/burrow"
+    description: "Dev tunnel CLI wrapping Cloudflare Tunnel with team-friendly persistent URLs"
+    license: MIT
+
 changelog:
   sort: asc
   filters:

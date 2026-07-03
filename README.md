@@ -19,7 +19,7 @@ Burrow gives you **named, persistent URLs** defined in a `.burrow.yaml` file com
 ## Requirements
 
 - A [Cloudflare account](https://dash.cloudflare.com/sign-up) (free)
-- A domain managed by Cloudflare (~$10/year) — for named persistent URLs
+- A domain managed by Cloudflare (~$10/year) - for named persistent URLs
 - No domain? Use `burrow share` for a free temporary URL with no account needed
 
 ## Installation
@@ -96,7 +96,7 @@ Commit `.burrow.yaml` to your repo. Every teammate gets the same URLs.
 
 | Command | Description |
 |---------|-------------|
-| `burrow init` | First-time setup — credentials and cloudflared install |
+| `burrow init` | First-time setup: credentials and cloudflared install |
 | `burrow up` | Start all tunnels defined in `.burrow.yaml` |
 | `burrow up <name>` | Start a single named tunnel |
 | `burrow down` | Stop all running tunnels |
@@ -131,7 +131,7 @@ tunnels:
     domain: docs.myapp.com
 ```
 
-The file is designed to be committed to your repo. Teammates clone and run `burrow up` — no setup beyond `burrow init` with their own credentials.
+The file is designed to be committed to your repo. Teammates clone and run `burrow up` - no setup beyond `burrow init` with their own credentials.
 
 ## Environment variables
 

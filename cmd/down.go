@@ -28,11 +28,11 @@ func runDown(cmd *cobra.Command, args []string) error {
 	for _, t := range tunnels {
 		proc, err := os.FindProcess(t.PID)
 		if err != nil {
-			fmt.Printf("  [skip] %s — process not found\n", t.Name)
+			fmt.Printf("  [skip] %s - process not found\n", t.Name)
 			continue
 		}
 		if err := proc.Kill(); err != nil {
-			fmt.Printf("  [fail] %s — %s\n", t.Name, err)
+			fmt.Printf("  [fail] %s - %s\n", t.Name, err)
 			continue
 		}
 		fmt.Printf("  [down] %s\n", t.Name)

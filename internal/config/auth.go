@@ -44,16 +44,16 @@ func LoadAuth() (*Auth, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			return nil, fmt.Errorf("not initialized — run `burrow init` first")
+			return nil, fmt.Errorf("not initialized - run `burrow init` first")
 		}
 		return nil, fmt.Errorf("could not read auth file: %w", err)
 	}
 	var auth Auth
 	if err := json.Unmarshal(data, &auth); err != nil {
-		return nil, fmt.Errorf("auth file is corrupted — run `burrow init` to reconfigure")
+		return nil, fmt.Errorf("auth file is corrupted - run `burrow init` to reconfigure")
 	}
 	if auth.APIToken == "" || auth.AccountID == "" {
-		return nil, fmt.Errorf("auth file is incomplete — run `burrow init` to reconfigure")
+		return nil, fmt.Errorf("auth file is incomplete - run `burrow init` to reconfigure")
 	}
 	return &auth, nil
 }

@@ -48,14 +48,14 @@ func runLogs(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-			return fmt.Errorf("no logs found for tunnel %q — has it been run with `burrow up`?", name)
+			return fmt.Errorf("no logs found for tunnel %q - has it been run with `burrow up`?", name)
 		}
 		logFiles = append(logFiles, struct{ name, path string }{name, path})
 	} else {
 		entries, err := os.ReadDir(logDir)
 		if err != nil {
 			if errors.Is(err, os.ErrNotExist) {
-				return fmt.Errorf("no logs found — run `burrow up` first")
+				return fmt.Errorf("no logs found - run `burrow up` first")
 			}
 			return fmt.Errorf("could not read log directory: %w", err)
 		}
@@ -66,7 +66,7 @@ func runLogs(cmd *cobra.Command, args []string) error {
 			}
 		}
 		if len(logFiles) == 0 {
-			return fmt.Errorf("no logs found — run `burrow up` first")
+			return fmt.Errorf("no logs found - run `burrow up` first")
 		}
 	}
 

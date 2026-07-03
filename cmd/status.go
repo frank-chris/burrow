@@ -25,7 +25,7 @@ func runStatus(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	// Load config for domain names — optional, gracefully ignored if not found
+	// Load config for domain names - optional, gracefully ignored if not found
 	domains := make(map[string]string)
 	if cfg, err := config.Load(""); err == nil {
 		for _, t := range cfg.Tunnels {

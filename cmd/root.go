@@ -31,4 +31,5 @@ func init() {
 	rootCmd.AddCommand(statusCmd)
 	rootCmd.AddCommand(logsCmd)
 	rootCmd.AddCommand(doctorCmd)
+	rootCmd.AddCommand(uninstallCmd)
 }

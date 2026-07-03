@@ -101,5 +101,5 @@ func (c *Client) getZoneForDomain(domain string) (string, error) {
 			return zones[0].ID, nil
 		}
 	}
-	return "", fmt.Errorf("no Cloudflare zone found for %q — ensure the domain is added to your Cloudflare account", domain)
+	return "", fmt.Errorf("no Cloudflare zone found for %q - ensure the domain is added to your Cloudflare account", domain)
 }

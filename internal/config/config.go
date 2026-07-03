@@ -27,7 +27,7 @@ func Load(path string) (*Config, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			return nil, fmt.Errorf("no %s found in current directory — create one first", constants.BurrowConfigFile)
+			return nil, fmt.Errorf("no %s found in current directory - create one first", constants.BurrowConfigFile)
 		}
 		return nil, fmt.Errorf("could not read config: %w", err)
 	}

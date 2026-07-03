@@ -21,7 +21,7 @@ type Process struct {
 
 func CheckCloudflared() error {
 	if !install.IsInstalled() {
-		return fmt.Errorf("cloudflared is not installed — run `burrow init` first")
+		return fmt.Errorf("cloudflared is not installed - run `burrow init` first")
 	}
 	return nil
 }

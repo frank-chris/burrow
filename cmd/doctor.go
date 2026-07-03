@@ -76,7 +76,7 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 	if _, err := config.Load(""); err == nil {
 		checks = append(checks, newCheck("ok", ".burrow.yaml found", ""))
 	} else {
-		checks = append(checks, newCheck("warn", ".burrow.yaml found", "not found in current directory — needed for `burrow up`"))
+		checks = append(checks, newCheck("warn", ".burrow.yaml found", "not found in current directory - needed for `burrow up`"))
 	}
 
 	// Running tunnels
@@ -98,7 +98,7 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 	for _, c := range checks {
 		label := fmt.Sprintf("[%-4s]", c.status)
 		if c.detail != "" {
-			fmt.Printf("  %s %s — %s\n", label, c.label, c.detail)
+			fmt.Printf("  %s %s - %s\n", label, c.label, c.detail)
 		} else {
 			fmt.Printf("  %s %s\n", label, c.label)
 		}

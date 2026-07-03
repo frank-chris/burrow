@@ -1,0 +1,9 @@
+provider: cloudflare
+
+tunnels:
+  - name: frontend
+    port: 3000
+    domain: frontend.yourapp.com
+  - name: api
+    port: 8080
+    domain: api.yourapp.com

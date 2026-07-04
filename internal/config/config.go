@@ -57,9 +57,6 @@ func (c *Config) validate() error {
 		if t.Port < 1 || t.Port > 65535 {
 			return fmt.Errorf("tunnel %q has invalid port %d", t.Name, t.Port)
 		}
-		if t.Domain == "" {
-			return fmt.Errorf("tunnel %q is missing a domain", t.Name)
-		}
 	}
 	return nil
 }

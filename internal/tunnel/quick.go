@@ -96,6 +96,13 @@ func (qt *QuickTunnel) WaitForURL(timeout time.Duration, ttl time.Duration) (str
 	}
 }
 
+func (qt *QuickTunnel) PID() int {
+	if qt.cmd == nil || qt.cmd.Process == nil {
+		return 0
+	}
+	return qt.cmd.Process.Pid
+}
+
 func (qt *QuickTunnel) Stop() error {
 	if qt.listener != nil {
 		qt.listener.Close()

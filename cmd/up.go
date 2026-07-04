@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/frank-chris/burrow/internal/config"
 	"github.com/frank-chris/burrow/internal/provider/cloudflare"
@@ -22,11 +23,6 @@ var upCmd = &cobra.Command{
 
 func runUp(cmd *cobra.Command, args []string) error {
 	if err := tunnel.CheckCloudflared(); err != nil {
-		return err
-	}
-
-	auth, err := config.LoadAuth()
-	if err != nil {
 		return err
 	}
 
@@ -50,17 +46,86 @@ func runUp(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	client := cloudflare.New(auth.APIToken, auth.AccountID)
-	manager := tunnel.NewManager(client)
-
-	fmt.Println("Starting tunnels...")
-	if err := manager.StartAll(cfg); err != nil {
-		manager.StopAll()
-		return err
+	var named, quick []config.TunnelConfig
+	for _, t := range cfg.Tunnels {
+		if t.Domain != "" {
+			named = append(named, t)
+		} else {
+			quick = append(quick, t)
+		}
 	}
 
-	if err := state.SavePIDs(manager.TunnelProcesses()); err != nil {
-		manager.StopAll()
+	var allPIDs []state.TunnelProcess
+	var manager *tunnel.Manager
+	var quickProcs []*tunnel.QuickTunnel
+
+	if len(named) > 0 {
+		auth, err := config.LoadAuth()
+		if err != nil {
+			return fmt.Errorf("tunnels with domains require credentials - run `burrow init` first: %w", err)
+		}
+		namedCfg := &config.Config{Provider: cfg.Provider, Tunnels: named}
+		client := cloudflare.New(auth.APIToken, auth.AccountID)
+		manager = tunnel.NewManager(client)
+		fmt.Println("Starting tunnels...")
+		if err := manager.StartAll(namedCfg); err != nil {
+			manager.StopAll()
+			return err
+		}
+		allPIDs = append(allPIDs, manager.TunnelProcesses()...)
+	}
+
+	if len(quick) > 0 {
+		fmt.Println("Starting quick tunnels...")
+		for _, t := range quick {
+			qt, err := tunnel.StartQuickTunnel(t.Port, tunnel.QuickOptions{})
+			if err != nil {
+				stopQuick(quickProcs)
+				if manager != nil {
+					manager.StopAll()
+				}
+				return err
+			}
+			quickProcs = append(quickProcs, qt)
+		}
+
+		type result struct {
+			index int
+			url   string
+			err   error
+		}
+		ch := make(chan result, len(quick))
+		for i, qt := range quickProcs {
+			go func() {
+				url, err := qt.WaitForURL(30*time.Second, 0)
+				ch <- result{index: i, url: url, err: err}
+			}()
+		}
+
+		urls := make([]string, len(quick))
+		for range quick {
+			r := <-ch
+			if r.err != nil {
+				stopQuick(quickProcs)
+				if manager != nil {
+					manager.StopAll()
+				}
+				return r.err
+			}
+			urls[r.index] = r.url
+		}
+
+		for i, t := range quick {
+			fmt.Printf("  [up] %s -> %s\n", t.Name, urls[i])
+			allPIDs = append(allPIDs, state.TunnelProcess{Name: t.Name, PID: quickProcs[i].PID()})
+		}
+	}
+
+	if err := state.SavePIDs(allPIDs); err != nil {
+		stopQuick(quickProcs)
+		if manager != nil {
+			manager.StopAll()
+		}
 		return fmt.Errorf("could not save process state: %w", err)
 	}
 
@@ -71,7 +136,16 @@ func runUp(cmd *cobra.Command, args []string) error {
 	<-stop
 
 	fmt.Println("\nShutting down...")
-	manager.StopAll()
+	stopQuick(quickProcs)
+	if manager != nil {
+		manager.StopAll()
+	}
 	state.ClearPIDs()
 	return nil
+}
+
+func stopQuick(procs []*tunnel.QuickTunnel) {
+	for _, qt := range procs {
+		qt.Stop()
+	}
 }

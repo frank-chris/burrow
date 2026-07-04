@@ -479,20 +479,20 @@ footer{
   <p class="install-divider" style="margin-top:40px">Other options</p>
 
   <div class="tabs-row">
-    <button class="tab-btn on" onclick="tab('mac',this)">macOS (Homebrew)</button>
-    <button class="tab-btn" onclick="tab('win',this)" id="win-install">Windows (Scoop)</button>
+    <button class="tab-btn on" onclick="tab('win',this)" id="win-install">Windows (Scoop)</button>
+    <button class="tab-btn" onclick="tab('mac',this)">macOS (Homebrew)</button>
   </div>
 
-  <div class="tab-panel on" id="tab-mac">
-    <div><span class="tm"># Homebrew</span></div>
-    <div><span class="tm">$ </span><span class="tn">brew tap </span><span class="tv">frank-chris/tap</span></div>
-    <div><span class="tm">$ </span><span class="tn">brew install </span><span class="tv">burrow</span></div>
-  </div>
-
-  <div class="tab-panel" id="tab-win">
+  <div class="tab-panel on" id="tab-win">
     <div><span class="tm"># Scoop</span></div>
     <div><span class="tm">$ </span><span class="tn">scoop bucket add </span><span class="tv">frank-chris </span><span class="tb">https://github.com/frank-chris/scoop-burrow</span></div>
     <div><span class="tm">$ </span><span class="tn">scoop install </span><span class="tv">burrow</span></div>
+  </div>
+
+  <div class="tab-panel" id="tab-mac">
+    <div><span class="tm"># Homebrew</span></div>
+    <div><span class="tm">$ </span><span class="tn">brew tap </span><span class="tv">frank-chris/tap</span></div>
+    <div><span class="tm">$ </span><span class="tn">brew install </span><span class="tv">burrow</span></div>
   </div>
 </div>
 

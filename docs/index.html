@@ -198,15 +198,27 @@ nav{
 }
 
 /* FEATURES */
+.feat-group{margin-top:28px}
+.feat-group:first-child{margin-top:36px}
+.feat-group-label{
+  font-family:var(--mono);font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-muted);
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:12px;
+}
+.feat-group-label::after{content:'';flex:1;height:1px;background:var(--border)}
 .features{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:1px;margin-top:36px;
+  gap:1px;
   border:1px solid var(--border);border-radius:var(--r);
   overflow:hidden;background:var(--border);
 }
 .feat{background:var(--bg);padding:clamp(16px,3vw,22px) clamp(14px,3vw,20px)}
-.feat-title{font-size:14px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
+.feat-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.feat-icon{color:var(--accent);flex-shrink:0}
+.feat-title{font-size:14px;font-weight:600;letter-spacing:-.01em}
 .feat-body{font-size:13px;color:var(--text-muted);line-height:1.55}
 .feat-body code{
   font-family:var(--mono);font-size:12px;
@@ -397,51 +409,89 @@ footer{
 <div class="section">
   <p class="eyebrow">Features</p>
   <h2 class="section-h">Everything a dev team needs</h2>
-  <div class="features">
-    <div class="feat">
-      <p class="feat-title">Persistent named URLs</p>
-      <p class="feat-body">Domains defined in <code>.burrow.yaml</code> stay the same across restarts. Commit the file, share with the team.</p>
+  <div class="feat-groups">
+
+    <div class="feat-group">
+      <p class="feat-group-label">Tunnels</p>
+      <div class="features">
+        <div class="feat">
+          <div class="feat-head">
+            <svg class="feat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <p class="feat-title">Persistent named URLs</p>
+          </div>
+          <p class="feat-body">Domains defined in <code>.burrow.yaml</code> stay the same across restarts. Commit the file, share with the team.</p>
+        </div>
+        <div class="feat">
+          <div class="feat-head">
+            <svg class="feat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            <p class="feat-title">Multi-tunnel</p>
+          </div>
+          <p class="feat-body">Frontend, API, docs: start all of them in parallel with a single <code>burrow up</code>. Each gets its own URL.</p>
+        </div>
+        <div class="feat">
+          <div class="feat-head">
+            <svg class="feat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <p class="feat-title">No account needed</p>
+          </div>
+          <p class="feat-body">Quick tunnels via trycloudflare.com work instantly. No signup, no config. Just run <code>burrow share 3000</code>.</p>
+        </div>
+      </div>
     </div>
-    <div class="feat">
-      <p class="feat-title">No account needed</p>
-      <p class="feat-body">Quick tunnels via trycloudflare.com work instantly. No signup, no config. Just run <code>burrow share 3000</code>.</p>
+
+    <div class="feat-group">
+      <p class="feat-group-label">Security &amp; access</p>
+      <div class="features">
+        <div class="feat">
+          <div class="feat-head">
+            <svg class="feat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            <p class="feat-title">Automatic HTTPS</p>
+          </div>
+          <p class="feat-body">Every tunnel URL is HTTPS. Trusted certificates, green lock, no warnings - for both quick tunnels and named domains.</p>
+        </div>
+        <div class="feat">
+          <div class="feat-head">
+            <svg class="feat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+            <p class="feat-title">Password protection</p>
+          </div>
+          <p class="feat-body">Lock a shared URL behind a password with <code>--password</code>. Basic auth, no extra setup required.</p>
+        </div>
+        <div class="feat">
+          <div class="feat-head">
+            <svg class="feat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <p class="feat-title">Auto-expiry</p>
+          </div>
+          <p class="feat-body">Set a TTL on any share tunnel. It shuts itself down after the duration with no dangling processes.</p>
+        </div>
+      </div>
     </div>
-    <div class="feat">
-      <p class="feat-title">Password protection</p>
-      <p class="feat-body">Lock a shared URL behind a password with <code>--password</code>. Basic auth, no extra setup required.</p>
+
+    <div class="feat-group">
+      <p class="feat-group-label">Developer tools</p>
+      <div class="features">
+        <div class="feat">
+          <div class="feat-head">
+            <svg class="feat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            <p class="feat-title">WebSocket and HMR</p>
+          </div>
+          <p class="feat-body">Vite, Next.js, webpack-dev-server all work without extra config. cloudflared proxies WebSocket connections natively.</p>
+        </div>
+        <div class="feat">
+          <div class="feat-head">
+            <svg class="feat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <p class="feat-title">Diagnostics</p>
+          </div>
+          <p class="feat-body">Warns before starting if nothing is listening on the target port. Tail live request logs with <code>burrow logs -f</code>, or run <code>burrow doctor</code> to check your setup.</p>
+        </div>
+        <div class="feat">
+          <div class="feat-head">
+            <svg class="feat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+            <p class="feat-title">QR code &amp; clipboard</p>
+          </div>
+          <p class="feat-body">The tunnel URL is copied to your clipboard automatically on start. Add <code>--qr</code> to also print a QR code for testing on a real device.</p>
+        </div>
+      </div>
     </div>
-    <div class="feat">
-      <p class="feat-title">Auto-expiry</p>
-      <p class="feat-body">Set a TTL on any share tunnel. It shuts itself down after the duration with no dangling processes.</p>
-    </div>
-    <div class="feat">
-      <p class="feat-title">Multi-tunnel</p>
-      <p class="feat-body">Frontend, API, docs: start all of them in parallel with a single <code>burrow up</code>. Each gets its own URL.</p>
-    </div>
-    <div class="feat">
-      <p class="feat-title">Port health check</p>
-      <p class="feat-body">Warns before starting if nothing is listening on the target port. Catches the "is my server even running?" mistake early.</p>
-    </div>
-    <div class="feat">
-      <p class="feat-title">WebSocket and HMR</p>
-      <p class="feat-body">Vite, Next.js, webpack-dev-server all work without extra config. cloudflared proxies WebSocket connections natively.</p>
-    </div>
-    <div class="feat">
-      <p class="feat-title">Automatic HTTPS</p>
-      <p class="feat-body">Every tunnel URL is HTTPS. Trusted certificates, green lock, no warnings - for both quick tunnels and named domains.</p>
-    </div>
-    <div class="feat">
-      <p class="feat-title">Request logs</p>
-      <p class="feat-body">Tail live request logs with <code>burrow logs -f</code>, or filter by tunnel name. Only available for named tunnels with a domain.</p>
-    </div>
-    <div class="feat">
-      <p class="feat-title">QR code</p>
-      <p class="feat-body">Run <code>burrow share --qr</code> to print a QR code for the tunnel URL. Handy for testing on a real device.</p>
-    </div>
-    <div class="feat">
-      <p class="feat-title">Clipboard copy</p>
-      <p class="feat-body">The tunnel URL is copied to your clipboard automatically when <code>burrow share</code> starts. No need to select and copy.</p>
-    </div>
+
   </div>
 </div>
 

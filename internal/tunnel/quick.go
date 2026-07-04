@@ -24,6 +24,7 @@ type QuickTunnel struct {
 	urlCh    chan string
 	errCh    chan error
 	listener net.Listener // auth proxy listener, if any
+	done     chan struct{}
 }
 
 func StartQuickTunnel(port int, opts QuickOptions) (*QuickTunnel, error) {
@@ -66,6 +67,7 @@ func StartQuickTunnel(port int, opts QuickOptions) (*QuickTunnel, error) {
 		urlCh:    make(chan string, 1),
 		errCh:    make(chan error, 1),
 		listener: proxyListener,
+		done:     make(chan struct{}),
 	}
 
 	go qt.parseOutput(bufio.NewScanner(stderr))
@@ -95,6 +97,11 @@ func (qt *QuickTunnel) WaitForURL(timeout time.Duration, ttl time.Duration) (str
 }
 
 func (qt *QuickTunnel) Stop() error {
+	select {
+	case <-qt.done:
+	default:
+		close(qt.done)
+	}
 	if qt.listener != nil {
 		qt.listener.Close()
 	}
@@ -102,6 +109,11 @@ func (qt *QuickTunnel) Stop() error {
 		return nil
 	}
 	return qt.cmd.Process.Kill()
+}
+
+// Done returns a channel that is closed when the tunnel stops.
+func (qt *QuickTunnel) Done() <-chan struct{} {
+	return qt.done
 }
 
 func (qt *QuickTunnel) parseOutput(scanner *bufio.Scanner) {

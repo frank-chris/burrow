@@ -86,11 +86,8 @@ func runShare(cmd *cobra.Command, args []string) error {
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
-	select {
-	case <-stop:
-		fmt.Println("\nStopping...")
-		return qt.Stop()
-	case <-qt.Done():
-		return nil
-	}
+	<-stop
+
+	fmt.Println("\nStopping...")
+	return qt.Stop()
 }

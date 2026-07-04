@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -71,22 +70,21 @@ func StartQuickTunnel(port int, opts QuickOptions) (*QuickTunnel, error) {
 
 	go qt.parseOutput(bufio.NewScanner(stderr))
 
-	if opts.TTL > 0 {
-		go func() {
-			time.Sleep(opts.TTL)
-			fmt.Println("\nTunnel TTL expired. Stopping.")
-			qt.Stop()
-			os.Exit(0)
-		}()
-	}
-
 	return qt, nil
 }
 
 // WaitForURL blocks until cloudflared prints its public URL or the timeout elapses.
-func (qt *QuickTunnel) WaitForURL(timeout time.Duration) (string, error) {
+// If a TTL is set it starts counting from the moment the tunnel is live.
+func (qt *QuickTunnel) WaitForURL(timeout time.Duration, ttl time.Duration) (string, error) {
 	select {
 	case url := <-qt.urlCh:
+		if ttl > 0 {
+			go func() {
+				time.Sleep(ttl)
+				fmt.Println("\nTunnel TTL expired. Stopping.")
+				qt.Stop()
+			}()
+		}
 		return url, nil
 	case err := <-qt.errCh:
 		return "", err

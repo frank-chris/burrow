@@ -63,7 +63,7 @@ func runShare(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	url, err := qt.WaitForURL(30 * time.Second)
+	url, err := qt.WaitForURL(30*time.Second, ttl)
 	if err != nil {
 		return err
 	}

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cloudflare Setup - burrow</title>
+<style>
+:root {
+  --bg: #F5F1EA;
+  --surface: #EDE9E1;
+  --border: #D0C9BE;
+  --text: #1A1714;
+  --text-muted: #7A7060;
+  --accent: #B56800;
+  --accent-fg: #fff;
+  --t-bg: #111318;
+  --t-text: #E2DDD6;
+  --t-muted: #5A5550;
+  --t-green: #4DB86A;
+  --t-amber: #E8A020;
+  --t-blue: #7EB8F7;
+  --t-purple: #C792EA;
+  --t-peach: #F78C6C;
+  --t-border: #262930;
+  --mono: 'SF Mono','Cascadia Code','JetBrains Mono','Fira Code',ui-monospace,monospace;
+  --sans: system-ui,-apple-system,'Segoe UI',sans-serif;
+  --w: 840px;
+  --r: 8px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#111318;--surface:#1A1D24;--border:#262930;
+    --text:#E2DDD6;--text-muted:#7A7570;
+    --accent:#E8A020;--accent-fg:#111318;
+    --t-bg:#0C0E12;--t-border:#1E2128;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111318;--surface:#1A1D24;--border:#262930;
+  --text:#E2DDD6;--text-muted:#7A7570;
+  --accent:#E8A020;--accent-fg:#111318;
+  --t-bg:#0C0E12;--t-border:#1E2128;
+}
+:root[data-theme="light"]{
+  --bg:#F5F1EA;--surface:#EDE9E1;--border:#D0C9BE;
+  --text:#1A1714;--text-muted:#7A7060;
+  --accent:#B56800;--accent-fg:#fff;
+  --t-bg:#111318;--t-border:#262930;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  max-width:var(--w);margin:0 auto;
+  padding:clamp(14px,3vw,22px) clamp(16px,5vw,28px);
+  border-bottom:1px solid var(--border);
+}
+.logo{font-family:var(--mono);font-size:17px;font-weight:600;letter-spacing:-0.02em;color:var(--text);text-decoration:none}
+.logo:hover{text-decoration:none}
+.logo-dot{color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:clamp(16px,4vw,28px)}
+.nav-link{font-size:14px;color:var(--text-muted);transition:color .15s;text-decoration:none}
+.nav-link:hover{color:var(--text);text-decoration:none}
+.nav-link.active{color:var(--accent)}
+.gh-link{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--text-muted);transition:color .15s;text-decoration:none}
+.gh-link:hover{color:var(--text);text-decoration:none}
+@media(max-width:500px){.nav-link{display:none}}
+
+.page{max-width:var(--w);margin:0 auto;padding:clamp(32px,6vw,56px) clamp(16px,5vw,28px) clamp(40px,6vw,64px)}
+
+.page-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.page-title{font-family:var(--mono);font-size:clamp(24px,5vw,38px);font-weight:600;letter-spacing:-.03em;line-height:1.1;text-wrap:balance;margin-bottom:14px}
+.page-lead{font-size:clamp(15px,2.5vw,17px);color:var(--text-muted);max-width:540px;line-height:1.6;margin-bottom:8px}
+
+.prereq{
+  margin-top:32px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:clamp(16px,3vw,22px) clamp(16px,3vw,24px);
+}
+.prereq-title{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px}
+.prereq-list{display:flex;flex-direction:column;gap:8px}
+.prereq-item{display:flex;align-items:baseline;gap:10px;font-size:14px}
+.prereq-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:6px}
+.prereq-item strong{color:var(--text);font-weight:600}
+.prereq-item span{color:var(--text-muted)}
+
+.skip-note{
+  margin-top:16px;
+  padding:12px 16px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r);
+  font-size:13px;color:var(--text-muted);
+}
+.skip-note code{font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--text)}
+
+.steps{display:flex;flex-direction:column;gap:24px;margin-top:40px}
+
+.step{border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.step-head{
+  display:flex;align-items:center;gap:14px;
+  padding:clamp(14px,2.5vw,18px) clamp(16px,3vw,24px);
+  background:var(--surface);border-bottom:1px solid var(--border);
+}
+.step-num{
+  font-family:var(--mono);font-size:11px;font-weight:700;
+  color:var(--accent-fg);background:var(--accent);
+  min-width:22px;height:22px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;padding:0 5px;
+}
+.step-title{font-family:var(--mono);font-size:clamp(14px,2.5vw,16px);font-weight:600;letter-spacing:-.01em}
+.step-body{padding:clamp(16px,3vw,24px);display:flex;flex-direction:column;gap:14px}
+.step-body p{font-size:15px;color:var(--text-muted);line-height:1.65}
+.step-body p strong{color:var(--text)}
+.step-body a{color:var(--accent)}
+
+.callout{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  border-radius:var(--r);
+  padding:14px 16px;
+  font-size:14px;color:var(--text-muted);line-height:1.6;
+}
+.callout strong{color:var(--text)}
+.callout code{font-family:var(--mono);font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--text)}
+
+.cmd{
+  background:var(--t-bg);border:1px solid var(--t-border);
+  border-radius:var(--r);padding:clamp(12px,2.5vw,16px) clamp(14px,3vw,20px);
+  font-family:var(--mono);font-size:clamp(11.5px,2vw,13px);line-height:1.9;
+  color:var(--t-text);overflow-x:auto;white-space:pre;
+}
+.cmd .tm{color:#5A5550}
+.cmd .ts{color:#E8A020}
+.cmd .tf{color:#C792EA}
+.cmd .tv{color:#F78C6C}
+.cmd .tb{color:#7EB8F7}
+.cmd .tg{color:#4DB86A}
+
+.perms-table{width:100%;border-collapse:collapse;font-size:13px;overflow-x:auto;display:block}
+.perms-table th{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);font-weight:600;text-align:left;padding:8px 12px;border-bottom:2px solid var(--border)}
+.perms-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-muted);vertical-align:top}
+.perms-table td:first-child{font-family:var(--mono);font-size:12px;color:var(--text);white-space:nowrap}
+.perms-table tr:last-child td{border-bottom:none}
+
+.yaml-block{
+  background:var(--t-bg);border:1px solid var(--t-border);
+  border-radius:var(--r);padding:clamp(12px,2.5vw,16px) clamp(14px,3vw,20px);
+  font-family:var(--mono);font-size:clamp(11.5px,2vw,13px);line-height:1.9;
+  color:var(--t-text);overflow-x:auto;white-space:pre;
+}
+.yaml-block .yk{color:#C792EA}
+.yaml-block .yv{color:#F78C6C}
+.yaml-block .ys{color:#7EB8F7}
+.yaml-block .ym{color:#5A5550}
+
+.inline-code{font-family:var(--mono);font-size:12.5px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1px 6px;color:var(--text)}
+
+footer{
+  border-top:1px solid var(--border);
+  max-width:var(--w);margin:0 auto;
+  padding:clamp(20px,4vw,28px) clamp(16px,5vw,28px);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
+  font-size:13px;color:var(--text-muted);
+}
+.foot-logo{font-family:var(--mono);font-weight:600;font-size:15px;color:var(--text)}
+.foot-links{display:flex;gap:20px}
+.foot-link{color:var(--text-muted);transition:color .15s;text-decoration:none}
+.foot-link:hover{color:var(--text)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="." class="logo">burrow<span class="logo-dot">.</span></a>
+  <div class="nav-right">
+    <a href=".#how" class="nav-link active">Docs</a>
+    <a href=".#install" class="nav-link">Install</a>
+    <a href="https://github.com/frank-chris/burrow" class="gh-link" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/>
+      </svg>
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <p class="page-eyebrow">Getting started</p>
+  <h1 class="page-title">Cloudflare setup</h1>
+  <p class="page-lead">How to set up burrow with Cloudflare for persistent named tunnel URLs.</p>
+
+  <div class="prereq">
+    <p class="prereq-title">What you need</p>
+    <div class="prereq-list">
+      <div class="prereq-item">
+        <div class="prereq-dot"></div>
+        <span><strong>A Cloudflare account</strong> - free at <a href="https://dash.cloudflare.com/sign-up">dash.cloudflare.com/sign-up</a></span>
+      </div>
+      <div class="prereq-item">
+        <div class="prereq-dot"></div>
+        <span><strong>A domain on Cloudflare</strong> - ~$10/yr. You can use any registrar; only the DNS needs to be managed by Cloudflare (free nameserver change).</span>
+      </div>
+      <div class="prereq-item">
+        <div class="prereq-dot"></div>
+        <span><strong>burrow installed</strong> - see the <a href=".#install">install section</a> on the main page.</span>
+      </div>
+    </div>
+    <div class="skip-note" style="margin-top:16px">
+      Only need a quick public URL with no account? Skip this guide and run <code>burrow share 3000</code>. It works immediately with no setup.
+    </div>
+  </div>
+
+  <div class="steps">
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-head">
+        <span class="step-num">1</span>
+        <h2 class="step-title">Add your domain to Cloudflare</h2>
+      </div>
+      <div class="step-body">
+        <p>If you already have a domain, you only need to point its nameservers to Cloudflare. Cloudflare's DNS is free and you keep your existing registrar.</p>
+        <p>Go to <a href="https://dash.cloudflare.com">dash.cloudflare.com</a>, click <strong>Add a site</strong>, enter your domain, and choose the free plan. Cloudflare will scan your existing DNS records and give you two nameservers to set at your registrar. DNS propagation takes up to 24 hours.</p>
+        <p>If you don't have a domain yet, register one anywhere (Cloudflare Registrar, Namecheap, etc.) and then follow the steps above.</p>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-head">
+        <span class="step-num">2</span>
+        <h2 class="step-title">Find your Account ID</h2>
+      </div>
+      <div class="step-body">
+        <p>Go to <a href="https://dash.cloudflare.com">dash.cloudflare.com</a> and click on any domain. In the right sidebar, scroll down to find <strong>Account ID</strong>. Copy it - you'll enter this when running <span class="inline-code">burrow init</span>.</p>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-head">
+        <span class="step-num">3</span>
+        <h2 class="step-title">Create an API token</h2>
+      </div>
+      <div class="step-body">
+        <p>Go to <a href="https://dash.cloudflare.com/profile/api-tokens">dash.cloudflare.com/profile/api-tokens</a> and click <strong>Create Token</strong>, then <strong>Create Custom Token</strong>. Do not use a template - burrow needs permissions that no template covers.</p>
+
+        <div class="callout">
+          <strong>Exact permissions required.</strong> Add all three rows below under <strong>Permissions</strong>. Getting this wrong will cause <span class="inline-code">burrow up</span> to fail with an API error.
+        </div>
+
+        <div style="overflow-x:auto">
+          <table class="perms-table">
+            <thead>
+              <tr>
+                <th>Resource type</th>
+                <th>Resource</th>
+                <th>Permission</th>
+                <th>Why</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Account</td>
+                <td>Cloudflare Tunnel</td>
+                <td>Edit</td>
+                <td style="color:var(--text-muted)">Creates and manages the tunnel object</td>
+              </tr>
+              <tr>
+                <td>Zone</td>
+                <td>DNS</td>
+                <td>Edit</td>
+                <td style="color:var(--text-muted)">Creates CNAME records pointing your domain to the tunnel</td>
+              </tr>
+              <tr>
+                <td>Zone</td>
+                <td>Zone</td>
+                <td>Read</td>
+                <td style="color:var(--text-muted)">Looks up your zone ID from the domain name</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Under <strong>Zone Resources</strong>, set <strong>Include - Specific zone</strong> and select your domain. Under <strong>Account Resources</strong>, select your account. Click through to create the token and copy it - you can only see it once.</p>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="step-head">
+        <span class="step-num">4</span>
+        <h2 class="step-title">Run burrow init</h2>
+      </div>
+      <div class="step-body">
+        <p>Run <span class="inline-code">burrow init</span> and enter the API token and Account ID from the previous steps. burrow will validate your credentials and install cloudflared automatically.</p>
+        <div class="cmd"><span class="tm">$ </span><span class="ts">burrow</span> init
+
+Setting up Burrow with Cloudflare Tunnel.
+
+Cloudflare API Token: <span class="tm">••••••••••••••••••••••</span>
+Cloudflare Account ID: <span class="tv">abc123def456</span>
+
+<span class="tm">Validating credentials...</span> <span class="tg">ok.</span>
+<span class="tm">Installing cloudflared...</span> <span class="tg">ok.</span>
+
+<span class="tg">Burrow is ready.</span></div>
+        <div class="callout">
+          <strong>Each team member runs this once.</strong> Credentials are stored locally in <code>~/.burrow/auth.json</code> and never go in the repo. The <span class="inline-code">.burrow.yaml</span> config file you create next is what gets committed.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+      <div class="step-head">
+        <span class="step-num">5</span>
+        <h2 class="step-title">Create .burrow.yaml</h2>
+      </div>
+      <div class="step-body">
+        <p>Create a <span class="inline-code">.burrow.yaml</span> file at the root of your project. Define each service you want to expose with a name, local port, and domain.</p>
+        <div class="yaml-block"><span class="yk">provider</span><span class="tm">:</span> <span class="yv">cloudflare</span>
+
+<span class="yk">tunnels</span><span class="tm">:</span>
+  <span class="tm">- </span><span class="yk">name</span><span class="tm">:</span> <span class="yv">api</span>
+    <span class="yk">port</span><span class="tm">:</span> <span class="yv">8080</span>
+    <span class="yk">domain</span><span class="tm">:</span> <span class="ys">api.yourapp.com</span>
+
+  <span class="tm">- </span><span class="yk">name</span><span class="tm">:</span> <span class="yv">frontend</span>
+    <span class="yk">port</span><span class="tm">:</span> <span class="yv">3000</span>
+    <span class="yk">domain</span><span class="tm">:</span> <span class="ys">frontend.yourapp.com</span></div>
+        <p>Commit this file to your repo. Teammates who have run <span class="inline-code">burrow init</span> can immediately run <span class="inline-code">burrow up</span> with no additional setup.</p>
+        <div class="callout">
+          <strong>Omit the domain to get a free temporary URL.</strong> Tunnels without a <code>domain</code> field use trycloudflare.com and don't require a Cloudflare account. You can mix both in the same file.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="step">
+      <div class="step-head">
+        <span class="step-num">6</span>
+        <h2 class="step-title">Start your tunnels</h2>
+      </div>
+      <div class="step-body">
+        <p>Make sure your local services are running on the ports defined in <span class="inline-code">.burrow.yaml</span>, then run:</p>
+        <div class="cmd"><span class="tm">$ </span><span class="ts">burrow</span> up
+
+<span class="tm">Starting tunnels...</span>
+  <span class="tg">[up]</span> <span class="tv">api</span>      <span class="tm">-&gt;</span> <span class="tb">https://api.yourapp.com</span>
+  <span class="tg">[up]</span> <span class="tv">frontend</span> <span class="tm">-&gt;</span> <span class="tb">https://frontend.yourapp.com</span>
+
+<span class="tg">All tunnels running.</span> <span class="tm">Press Ctrl+C to stop.</span></div>
+        <p>DNS records are created automatically on first run. The same URLs will work every time you restart, for every teammate.</p>
+      </div>
+    </div>
+
+  </div><!-- /steps -->
+
+  <div style="margin-top:40px;padding-top:32px;border-top:1px solid var(--border)">
+    <p style="font-size:14px;color:var(--text-muted)">Need help? Open an issue on <a href="https://github.com/frank-chris/burrow/issues">GitHub</a>. For managing tunnels once they're running, see the <a href=".#how">commands reference</a>.</p>
+  </div>
+
+</div><!-- /page -->
+
+<footer>
+  <span class="foot-logo">burrow</span>
+  <div class="foot-links">
+    <a href="https://github.com/frank-chris/burrow" class="foot-link" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/frank-chris/burrow/releases" class="foot-link" target="_blank" rel="noopener">Releases</a>
+    <a href="https://github.com/frank-chris/burrow/blob/main/LICENSE" class="foot-link" target="_blank" rel="noopener">MIT License</a>
+  </div>
+</footer>
+
+</body>
+</html>

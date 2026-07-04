@@ -139,18 +139,17 @@ nav{
 .install-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
 .install-cmd{
   display:inline-flex;align-items:center;gap:10px;
-  background:var(--surface);border:1px solid var(--border);
+  background:var(--t-bg);border:1px solid var(--t-border);
   border-radius:6px;padding:10px 16px;
-  font-family:var(--mono);font-size:13px;color:var(--text-muted);
+  font-family:var(--mono);font-size:13px;color:var(--t-text);
 }
-.install-cmd strong{color:var(--text);font-weight:500}
 .copy-btn{
   background:none;border:none;cursor:pointer;
-  color:var(--text-muted);padding:0;
+  color:var(--t-muted);padding:0;
   display:flex;align-items:center;
   transition:color .15s;
 }
-.copy-btn:hover{color:var(--accent)}
+.copy-btn:hover{color:var(--t-amber)}
 .install-more{font-size:13px;color:var(--text-muted)}
 .install-more a{color:var(--accent);border-bottom:1px solid transparent;transition:border-color .15s}
 .install-more a:hover{border-color:var(--accent)}
@@ -328,7 +327,7 @@ footer{
 
   <div class="install-row">
     <div class="install-cmd">
-      <strong>curl -sSL https://frank-chris.github.io/burrow/install.sh | sh</strong>
+      <span class="tn">curl </span><span class="tf">-sSL </span><span class="tb">https://frank-chris.github.io/burrow/install.sh</span><span class="tm"> | </span><span class="tn">sh</span>
       <button class="copy-btn" id="copy-btn" onclick="doCopy()" title="Copy to clipboard">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2"/>
@@ -466,7 +465,7 @@ footer{
   <p class="section-p">cloudflared downloads automatically on first use. No manual setup needed for quick tunnels.</p>
 
   <div class="install-primary">
-    <span><span class="tc">curl -sSL https://frank-chris.github.io/burrow/install.sh | sh</span></span>
+    <span><span class="tm">$ </span><span class="tn">curl </span><span class="tf">-sSL </span><span class="tb">https://frank-chris.github.io/burrow/install.sh</span><span class="tm"> | </span><span class="tn">sh</span></span>
     <button class="install-primary-copy" id="curl-copy-btn" onclick="copyCurl()" title="Copy">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>

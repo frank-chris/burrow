@@ -16,11 +16,16 @@ Most tunnel tools give you a random URL that changes every restart. This breaks 
 
 Burrow gives you **named, persistent URLs** defined in a `.burrow.yaml` file committed to your repo. Every teammate runs `burrow up` and gets the exact same domains every time.
 
+No domain? Burrow works without a Cloudflare account too - tunnels without a domain fall back to free temporary trycloudflare.com URLs automatically.
+
 ## Requirements
 
+For quick tunnels (`burrow share`, or `burrow up` without domains):
+- Nothing. No account needed.
+
+For persistent named URLs (`burrow up` with domains):
 - A [Cloudflare account](https://dash.cloudflare.com/sign-up) (free)
-- A domain managed by Cloudflare (~$10/year) - for named persistent URLs
-- No domain? Use `burrow share` for a free temporary URL with no account needed
+- A domain managed by Cloudflare (~$10/year)
 
 ## Installation
 
@@ -58,21 +63,39 @@ go install github.com/frank-chris/burrow@latest
 
 ## Quick start
 
-**1. Set up credentials**
-```bash
-burrow init
-```
-This walks you through entering your Cloudflare API token and Account ID, validates them, and downloads the cloudflared binary automatically. You only need to do this once.
+### No account needed
 
-**2. Quick share (no config needed)**
+Share a local port instantly:
 ```bash
 burrow share 3000
 # → https://random-words.trycloudflare.com
 ```
 
-**3. Named persistent tunnels**
+Or run multiple tunnels without any config:
+```yaml
+# .burrow.yaml
+tunnels:
+  - name: frontend
+    port: 3000
+  - name: api
+    port: 8080
+```
+```bash
+burrow up
+# → [up] frontend -> https://random1.trycloudflare.com
+# → [up] api      -> https://random2.trycloudflare.com
+```
 
-Create a `.burrow.yaml` in your project:
+cloudflared is downloaded automatically on first use.
+
+### Persistent named URLs (requires Cloudflare account)
+
+Run `burrow init` once to store your credentials:
+```bash
+burrow init
+```
+
+Then add domains to your `.burrow.yaml`:
 ```yaml
 provider: cloudflare
 
@@ -85,22 +108,23 @@ tunnels:
     domain: api.myapp.com
 ```
 
-Then:
 ```bash
 burrow up
+# → [up] frontend -> https://frontend.myapp.com
+# → [up] api      -> https://api.myapp.com
 ```
 
-Commit `.burrow.yaml` to your repo. Every teammate gets the same URLs.
+Commit `.burrow.yaml` to your repo. Every teammate gets the same URLs every time.
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
-| `burrow init` | First-time setup: credentials and cloudflared install |
+| `burrow init` | Set up Cloudflare credentials (only needed for persistent URLs) |
 | `burrow up` | Start all tunnels defined in `.burrow.yaml` |
 | `burrow up <name>` | Start a single named tunnel |
 | `burrow down` | Stop all running tunnels |
-| `burrow share <port>` | Quick one-off public URL (no config needed) |
+| `burrow share <port>` | Quick one-off public URL (no account needed) |
 | `burrow share <port> --password <pw>` | Password-protected share |
 | `burrow share <port> --ttl 2h` | Share that expires after 2 hours |
 | `burrow status` | Show status of running tunnels |
@@ -112,15 +136,15 @@ Commit `.burrow.yaml` to your repo. Every teammate gets the same URLs.
 
 ## Configuration
 
-`.burrow.yaml` supports multiple tunnels, each with a name, port, and domain:
+`.burrow.yaml` supports multiple tunnels. `domain` is optional - omit it to use a free temporary trycloudflare.com URL:
 
 ```yaml
-provider: cloudflare
+provider: cloudflare  # only needed if any tunnel has a domain
 
 tunnels:
   - name: frontend
     port: 3000
-    domain: frontend.myapp.com
+    domain: frontend.myapp.com  # persistent URL - requires burrow init
 
   - name: api
     port: 8080
@@ -128,10 +152,8 @@ tunnels:
 
   - name: docs
     port: 4000
-    domain: docs.myapp.com
+    # no domain - gets a free temporary URL
 ```
-
-The file is designed to be committed to your repo. Teammates clone and run `burrow up` - no setup beyond `burrow init` with their own credentials.
 
 ## Environment variables
 
@@ -140,6 +162,8 @@ The file is designed to be committed to your repo. Teammates clone and run `burr
 | `BURROW_CONFIG_DIR` | Override the default config directory (`~/.burrow`) |
 
 ## Cloudflare setup
+
+Only needed for persistent named URLs:
 
 1. [Create a Cloudflare account](https://dash.cloudflare.com/sign-up)
 2. Add your domain to Cloudflare and update your nameservers

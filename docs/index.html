@@ -401,6 +401,10 @@ footer{
       <p class="feat-title">Port health check</p>
       <p class="feat-body">Warns before starting if nothing is listening on the target port. Catches the "is my server even running?" mistake early.</p>
     </div>
+    <div class="feat">
+      <p class="feat-title">WebSocket and HMR</p>
+      <p class="feat-body">Vite, Next.js, webpack-dev-server all work without extra config. cloudflared proxies WebSocket connections natively.</p>
+    </div>
   </div>
 </div>
 
@@ -444,6 +448,7 @@ footer{
       <p class="cmd-desc">Manage tunnels started with <code style="font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1px 5px">burrow up</code>. Logs are only available for named tunnels (those with a domain in .burrow.yaml).</p>
       <div class="cmd-block">
         <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">down</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">down </span><span class="tv">api</span><span class="tm">          # stop a single tunnel</span></div>
         <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">status</span></div>
         <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">logs</span></div>
         <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">logs </span><span class="tv">api </span><span class="tf">--follow</span></div>

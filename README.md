@@ -124,6 +124,7 @@ Commit `.burrow.yaml` to your repo. Every teammate gets the same URLs every time
 | `burrow up` | Start all tunnels defined in `.burrow.yaml` |
 | `burrow up <name>` | Start a single named tunnel |
 | `burrow down` | Stop all running tunnels |
+| `burrow down <name>` | Stop a single named tunnel |
 | `burrow share <port>` | Quick one-off public URL (no account needed) |
 | `burrow share <port> --password <pw>` | Password-protected share |
 | `burrow share <port> --ttl 2h` | Share that expires after 2 hours |
@@ -157,6 +158,10 @@ tunnels:
     port: 4000
     # no domain - gets a free temporary URL
 ```
+
+## WebSocket and HMR
+
+Burrow inherits WebSocket support from cloudflared. Frameworks that use WebSockets for hot module replacement - Vite, Next.js, webpack-dev-server - work without any extra configuration.
 
 ## Environment variables
 

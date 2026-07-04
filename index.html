@@ -469,16 +469,41 @@ footer{
 
     <details class="cmd-entry">
       <summary class="cmd-summary">
-        <span class="cmd-name">burrow <span>down</span> / <span>status</span> / <span>logs</span></span>
+        <span class="cmd-name">burrow <span>down</span></span>
         <span class="cmd-toggle">+</span>
       </summary>
       <div class="cmd-body">
-        <p class="cmd-desc">Manage tunnels started with <code style="font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1px 5px">burrow up</code>. Logs are only available for named tunnels (those with a domain in .burrow.yaml).</p>
+        <p class="cmd-desc">Stop all running tunnels, or a single one by name.</p>
         <div class="cmd-block">
           <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">down</span></div>
-          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">down </span><span class="tv">api</span><span class="tm">          # stop a single tunnel</span></div>
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">down </span><span class="tv">api</span></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="cmd-entry">
+      <summary class="cmd-summary">
+        <span class="cmd-name">burrow <span>status</span></span>
+        <span class="cmd-toggle">+</span>
+      </summary>
+      <div class="cmd-body">
+        <p class="cmd-desc">Show the name, PID, and URL of every tunnel currently running.</p>
+        <div class="cmd-block">
           <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">status</span></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="cmd-entry">
+      <summary class="cmd-summary">
+        <span class="cmd-name">burrow <span>logs</span></span>
+        <span class="cmd-toggle">+</span>
+      </summary>
+      <div class="cmd-body">
+        <p class="cmd-desc">Show tunnel request logs. Only available for named tunnels with a domain in .burrow.yaml.</p>
+        <div class="cmd-block">
           <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">logs</span></div>
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">logs </span><span class="tv">api</span></div>
           <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">logs </span><span class="tv">api </span><span class="tf">--follow</span></div>
         </div>
       </div>
@@ -499,13 +524,25 @@ footer{
 
     <details class="cmd-entry">
       <summary class="cmd-summary">
-        <span class="cmd-name">burrow <span>doctor</span> / <span>uninstall</span></span>
+        <span class="cmd-name">burrow <span>doctor</span></span>
         <span class="cmd-toggle">+</span>
       </summary>
       <div class="cmd-body">
-        <p class="cmd-desc">Diagnose setup issues or remove burrow and all its data from your system.</p>
+        <p class="cmd-desc">Diagnose setup issues - checks that cloudflared is installed, credentials are present, and config is valid.</p>
         <div class="cmd-block">
           <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">doctor</span></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="cmd-entry">
+      <summary class="cmd-summary">
+        <span class="cmd-name">burrow <span>uninstall</span></span>
+        <span class="cmd-toggle">+</span>
+      </summary>
+      <div class="cmd-body">
+        <p class="cmd-desc">Remove burrow's config directory, credentials, and PID files from your system.</p>
+        <div class="cmd-block">
           <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">uninstall</span></div>
         </div>
       </div>

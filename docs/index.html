@@ -328,7 +328,7 @@ footer{
 
   <div class="install-row">
     <div class="install-cmd">
-      <strong>brew install frank-chris/tap/burrow</strong>
+      <strong>curl -sSL https://frank-chris.github.io/burrow/install.sh | sh</strong>
       <button class="copy-btn" id="copy-btn" onclick="doCopy()" title="Copy to clipboard">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2"/>
@@ -338,7 +338,7 @@ footer{
     </div>
   </div>
   <p class="install-more" style="margin-top:12px">
-    Also available for <a href="#install">Linux &amp; Windows</a>
+    macOS and Linux. <a href="#install">Windows? Use Scoop.</a>
   </p>
 </div>
 
@@ -614,7 +614,7 @@ function copyCurl(){
 
 // Copy
 function doCopy(){
-  navigator.clipboard.writeText('brew install frank-chris/tap/burrow').then(() => {
+  navigator.clipboard.writeText('curl -sSL https://frank-chris.github.io/burrow/install.sh | sh').then(() => {
     const btn = document.getElementById('copy-btn');
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
     btn.style.color = 'var(--accent)';

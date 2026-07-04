@@ -112,7 +112,10 @@ func latestRelease() (*releaseInfo, error) {
 
 	var release struct {
 		TagName string `json:"tag_name"`
-		Body    string `json:"body"`
+		Assets  []struct {
+			Name   string `json:"name"`
+			Digest string `json:"digest"` // "sha256:<hex>"
+		} `json:"assets"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
 		return nil, fmt.Errorf("could not parse GitHub release response")
@@ -121,54 +124,18 @@ func latestRelease() (*releaseInfo, error) {
 		return nil, fmt.Errorf("empty version in GitHub release response")
 	}
 
-	return &releaseInfo{
-		version:   release.TagName,
-		checksums: parseChecksums(release.Body),
-	}, nil
-}
-
-// parseChecksums extracts the SHA256 checksum map from the release body.
-// The release body contains a markdown section like:
-//
-//	### SHA256 Checksums:
-//	```
-//	cloudflared-windows-amd64.exe: 5253e66f...
-//	```
-func parseChecksums(body string) map[string]string {
 	checksums := make(map[string]string)
-	inSection := false
-	inBlock := false
-	for _, line := range strings.Split(body, "\n") {
-		line = strings.TrimSpace(line)
-		if strings.Contains(line, "SHA256 Checksums") {
-			inSection = true
-			continue
-		}
-		if !inSection {
-			continue
-		}
-		if strings.HasPrefix(line, "```") {
-			if inBlock {
-				break // closing fence - done
-			}
-			inBlock = true
-			continue
-		}
-		if !inBlock {
-			continue
-		}
-		// Lines look like "cloudflared-windows-amd64.exe: <hash>"
-		parts := strings.SplitN(line, ": ", 2)
-		if len(parts) != 2 {
-			continue
-		}
-		filename := strings.TrimSpace(parts[0])
-		hash := strings.TrimSpace(parts[1])
-		if filename != "" && len(hash) == 64 {
-			checksums[filename] = hash
+	for _, asset := range release.Assets {
+		hash, ok := strings.CutPrefix(asset.Digest, "sha256:")
+		if ok && len(hash) == 64 {
+			checksums[asset.Name] = hash
 		}
 	}
-	return checksums
+
+	return &releaseInfo{
+		version:   release.TagName,
+		checksums: checksums,
+	}, nil
 }
 
 func platformBinaryName() string {

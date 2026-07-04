@@ -48,6 +48,9 @@ func runLogs(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+			if isQuickTunnel(name) {
+				return fmt.Errorf("tunnel %q is a quick tunnel - logs are only available for tunnels with a domain in .burrow.yaml", name)
+			}
 			return fmt.Errorf("no logs found for tunnel %q - has it been run with `burrow up`?", name)
 		}
 		logFiles = append(logFiles, struct{ name, path string }{name, path})
@@ -66,6 +69,10 @@ func runLogs(cmd *cobra.Command, args []string) error {
 			}
 		}
 		if len(logFiles) == 0 {
+			pids, _ := state.LoadPIDs()
+			if len(pids) > 0 {
+				return fmt.Errorf("no logs found - running tunnels are quick tunnels (no domain). Logs are only available for tunnels with a domain in .burrow.yaml")
+			}
 			return fmt.Errorf("no logs found - run `burrow up` first")
 		}
 	}
@@ -147,4 +154,18 @@ func tailFile(name, path string, prefix bool) {
 			time.Sleep(100 * time.Millisecond)
 		}
 	}
+}
+
+// isQuickTunnel reports whether name appears in the PID file but has no log file.
+func isQuickTunnel(name string) bool {
+	pids, err := state.LoadPIDs()
+	if err != nil {
+		return false
+	}
+	for _, p := range pids {
+		if p.Name == name {
+			return true
+		}
+	}
+	return false
 }

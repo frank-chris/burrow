@@ -79,7 +79,13 @@ func runShare(cmd *cobra.Command, args []string) error {
 	}
 	if shareQR {
 		fmt.Println()
-		qrterminal.Generate(url, qrterminal.L, os.Stdout)
+		qrterminal.GenerateWithConfig(url, qrterminal.Config{
+			Level:     qrterminal.L,
+			Writer:    os.Stdout,
+			BlackChar: qrterminal.BLACK,
+			WhiteChar: qrterminal.WHITE,
+			WithSixel: false,
+		})
 	}
 	fmt.Println()
 

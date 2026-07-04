@@ -18,6 +18,10 @@ Burrow gives you **named, persistent URLs** defined in a `.burrow.yaml` file com
 
 No domain? Burrow works without a Cloudflare account too - tunnels without a domain fall back to free temporary trycloudflare.com URLs automatically.
 
+**vs ngrok:** ngrok charges $8-20/month for persistent URLs. Burrow runs on Cloudflare Tunnel (no usage fees), so the only cost is your domain (~$10/year), shared across the whole team with no per-seat pricing.
+
+**vs raw cloudflared:** Cloudflare Tunnel is the right infrastructure, but the raw CLI takes 7 manual steps to set up and produces credentials files that cannot be safely committed to git. Burrow automates DNS record creation, wraps the config into a single committable `.burrow.yaml`, and handles multi-tunnel process management. Each user still needs to authenticate once with `burrow init`, but everything after that is automated.
+
 ## Requirements
 
 For quick tunnels (`burrow share`, or `burrow up` without domains):

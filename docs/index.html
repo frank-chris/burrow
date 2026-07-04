@@ -374,14 +374,21 @@ footer{
   <p class="section-p">Random tunnel URLs mean reconfiguring webhooks, resending links to teammates, and losing the session state you had in your browser tab.</p>
   <div class="split">
     <div class="split-card">
-      <p class="split-label">Without burrow</p>
+      <p class="split-label">ngrok / random tunnels</p>
       <p class="split-title">New URL on every restart</p>
-      <p class="split-body">Your payment webhook points to <code>abc-xyz.trycloudflare.com</code>. It changes. You update it. It changes again tomorrow.</p>
+      <p class="split-body">Your payment webhook points to <code>abc-xyz.trycloudflare.com</code>. It changes. You update it. It changes again tomorrow. Persistent URLs on ngrok start at $8/month per user.</p>
     </div>
     <div class="split-card">
+      <p class="split-label">raw cloudflared</p>
+      <p class="split-title">Right infrastructure, rough setup</p>
+      <p class="split-body">7 manual steps, credentials files that can't be committed, no process management, and each teammate configures their own setup from scratch.</p>
+    </div>
+  </div>
+  <div class="split" style="margin-top:16px">
+    <div class="split-card">
       <p class="split-label">With burrow</p>
-      <p class="split-title">Same URL, every time</p>
-      <p class="split-body">Define tunnels in <code>.burrow.yaml</code>, commit it. Every teammate runs <code>burrow up</code> and gets the same domains, every time.</p>
+      <p class="split-title">One committed file, same URLs for everyone</p>
+      <p class="split-body">Define tunnels in <code>.burrow.yaml</code> and commit it. DNS is created automatically. Every credentialed teammate runs <code>burrow up</code> and gets the exact same domains, every time. Domain cost only — no per-seat fees.</p>
     </div>
   </div>
 </div>

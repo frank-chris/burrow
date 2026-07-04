@@ -117,7 +117,7 @@ nav{
 .dot{width:11px;height:11px;border-radius:50%}
 .dot-r{background:#FF5F57}.dot-y{background:#FEBC2E}.dot-g{background:#28C840}
 .term-title{flex:1;text-align:center;font-size:11px;color:#44403C;letter-spacing:.04em}
-.term-body{padding:20px 22px 24px;height:210px;overflow:hidden}
+.term-body{padding:20px 22px 24px;height:210px;overflow-x:auto;overflow-y:hidden}
 .tl{display:block}
 .tc{color:var(--t-amber)}   /* command prompt line */
 .ts{color:var(--t-amber)}   /* subcommand */
@@ -293,6 +293,24 @@ footer{
 .foot-link{color:var(--text-muted);transition:color .15s}
 .foot-link:hover{color:var(--text)}
 @media(max-width:480px){footer{flex-direction:column;gap:16px;text-align:center}}
+
+/* MOBILE */
+@media(max-width:640px){
+  nav{padding:16px 20px}
+  .nav-link{display:none}
+  .hero{padding:36px 20px 48px}
+  .hero p{font-size:15px;margin-bottom:36px}
+  .section{padding:44px 20px}
+  .term-wrap{font-size:12px}
+  .term-body{height:200px}
+  .install-cmd{font-size:11.5px;max-width:100%;overflow-x:auto}
+  .install-primary{font-size:12px;padding:14px 16px}
+  .install-primary > span{overflow-x:auto;white-space:nowrap;max-width:calc(100% - 80px)}
+  .cmd-block{overflow-x:auto;font-size:12px}
+  .tab-panel{overflow-x:auto;font-size:12px}
+  .tabs-row{overflow-x:auto;width:100%;padding-bottom:2px}
+  .cmd-name{font-size:14px}
+}
 </style>
 
 <!-- NAV -->

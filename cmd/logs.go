@@ -58,6 +58,10 @@ func runLogs(cmd *cobra.Command, args []string) error {
 		entries, err := os.ReadDir(logDir)
 		if err != nil {
 			if errors.Is(err, os.ErrNotExist) {
+				pids, _ := state.LoadPIDs()
+				if len(pids) > 0 {
+					return fmt.Errorf("no logs found - running tunnels are quick tunnels (no domain). Logs are only available for tunnels with a domain in .burrow.yaml")
+				}
 				return fmt.Errorf("no logs found - run `burrow up` first")
 			}
 			return fmt.Errorf("could not read log directory: %w", err)

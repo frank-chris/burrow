@@ -509,14 +509,18 @@ footer{
 <script>
 // Terminal animation
 const tb = document.getElementById('term-body');
-const cur = document.getElementById('cur');
 
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
-// Segments: [{t: text, c: class}]
+function cursor(){ return document.getElementById('cur'); }
+
+function clearTerminal(){
+  tb.innerHTML = '<span class="cursor" id="cur"></span>';
+}
+
 async function typeSegments(segments){
   const row = document.createElement('div');
-  tb.insertBefore(row, cur);
+  tb.insertBefore(row, cursor());
   for(const seg of segments){
     const el = document.createElement('span');
     if(seg.c) el.className = seg.c;
@@ -536,7 +540,7 @@ function line(segments){
     el.textContent = seg.t;
     row.appendChild(el);
   }
-  tb.insertBefore(row, cur);
+  tb.insertBefore(row, cursor());
 }
 
 const demos = [
@@ -579,8 +583,7 @@ async function run(){
       line(segs);
     }
     await sleep(3600);
-    tb.innerHTML = '';
-    tb.appendChild(cur);
+    clearTerminal();
     await sleep(280);
   }
 }

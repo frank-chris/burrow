@@ -215,12 +215,22 @@ nav{
 }
 
 /* COMMANDS */
-.cmd-list{margin-top:40px;display:flex;flex-direction:column;gap:32px}
-.cmd-name{
-  font-family:var(--mono);font-size:clamp(14px,2.5vw,16px);font-weight:600;
-  letter-spacing:-.02em;color:var(--text);margin-bottom:4px;
+.cmd-list{margin-top:40px;display:flex;flex-direction:column;gap:8px}
+details.cmd-entry{border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.cmd-summary{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:clamp(12px,2.5vw,16px) clamp(14px,3vw,20px);
+  cursor:pointer;list-style:none;
+  background:var(--surface);user-select:none;
 }
+.cmd-summary::-webkit-details-marker{display:none}
+.cmd-summary:focus{outline:none}
+.cmd-summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.cmd-name{font-family:var(--mono);font-size:clamp(14px,2.5vw,16px);font-weight:600;letter-spacing:-.02em;color:var(--text)}
 .cmd-name span{color:var(--accent)}
+.cmd-toggle{font-family:var(--mono);font-size:18px;color:var(--text-muted);line-height:1;flex-shrink:0;transition:transform .2s}
+details[open] .cmd-toggle{transform:rotate(45deg)}
+.cmd-body{padding:clamp(12px,2.5vw,16px) clamp(14px,3vw,20px)}
 .cmd-desc{font-size:14px;color:var(--text-muted);margin-bottom:12px;line-height:1.5}
 .cmd-block{
   background:var(--t-bg);border:1px solid var(--t-border);
@@ -233,6 +243,9 @@ nav{
 .cmd-block .tv{color:var(--t-peach)}
 .cmd-block .tm{color:var(--t-muted)}
 .cmd-block .tb{color:var(--t-blue)}
+
+/* INSTALL LABEL */
+.install-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
 
 /* INSTALL SECTION */
 .install-primary{
@@ -337,6 +350,7 @@ footer{
     <div class="term-body" id="term-body"><span class="cursor" id="cur"></span></div>
   </div>
 
+  <p class="install-eyebrow">Quick install</p>
   <div class="install-row">
     <div class="install-cmd">
       <span class="tn">curl </span><span class="tf">-sSL </span><span class="tb">https://frank-chris.github.io/burrow/install.sh</span><span class="tm"> | </span><span class="tn">sh</span>
@@ -416,61 +430,86 @@ footer{
 
   <div class="cmd-list">
 
-    <div class="cmd-entry">
-      <p class="cmd-name">burrow <span>up</span></p>
-      <p class="cmd-desc">Start all tunnels defined in .burrow.yaml. Tunnels with a domain get persistent URLs; tunnels without one get a free temporary trycloudflare.com URL.</p>
-      <div class="cmd-block">
-        <div><span class="tm"># start all tunnels</span></div>
-        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">up</span></div>
-        <br>
-        <div><span class="tm"># start a single tunnel by name</span></div>
-        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">up </span><span class="tv">api</span></div>
+    <details class="cmd-entry" open>
+      <summary class="cmd-summary">
+        <span class="cmd-name">burrow <span>up</span></span>
+        <span class="cmd-toggle">+</span>
+      </summary>
+      <div class="cmd-body">
+        <p class="cmd-desc">Start all tunnels defined in .burrow.yaml. Tunnels with a domain get persistent URLs; tunnels without one get a free temporary trycloudflare.com URL.</p>
+        <div class="cmd-block">
+          <div><span class="tm"># start all tunnels</span></div>
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">up</span></div>
+          <br>
+          <div><span class="tm"># start a single tunnel by name</span></div>
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">up </span><span class="tv">api</span></div>
+        </div>
       </div>
-    </div>
+    </details>
 
-    <div class="cmd-entry">
-      <p class="cmd-name">burrow <span>share</span></p>
-      <p class="cmd-desc">Share a local port instantly with a public URL. No account or config needed. Runs in the foreground; press Ctrl+C to stop.</p>
-      <div class="cmd-block">
-        <div><span class="tm"># share port 3000</span></div>
-        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">share </span><span class="tv">3000</span></div>
-        <br>
-        <div><span class="tm"># password-protect the URL</span></div>
-        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">share </span><span class="tv">3000 </span><span class="tf">--password </span><span class="tv">secret</span></div>
-        <br>
-        <div><span class="tm"># auto-expire after 2 hours and show a QR code</span></div>
-        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">share </span><span class="tv">3000 </span><span class="tf">--ttl </span><span class="tv">2h </span><span class="tf">--qr</span></div>
+    <details class="cmd-entry">
+      <summary class="cmd-summary">
+        <span class="cmd-name">burrow <span>share</span></span>
+        <span class="cmd-toggle">+</span>
+      </summary>
+      <div class="cmd-body">
+        <p class="cmd-desc">Share a local port instantly with a public URL. No account or config needed. Runs in the foreground; press Ctrl+C to stop.</p>
+        <div class="cmd-block">
+          <div><span class="tm"># share port 3000</span></div>
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">share </span><span class="tv">3000</span></div>
+          <br>
+          <div><span class="tm"># password-protect the URL</span></div>
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">share </span><span class="tv">3000 </span><span class="tf">--password </span><span class="tv">secret</span></div>
+          <br>
+          <div><span class="tm"># auto-expire after 2 hours and show a QR code</span></div>
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">share </span><span class="tv">3000 </span><span class="tf">--ttl </span><span class="tv">2h </span><span class="tf">--qr</span></div>
+        </div>
       </div>
-    </div>
+    </details>
 
-    <div class="cmd-entry">
-      <p class="cmd-name">burrow <span>down</span> / <span>status</span> / <span>logs</span></p>
-      <p class="cmd-desc">Manage tunnels started with <code style="font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1px 5px">burrow up</code>. Logs are only available for named tunnels (those with a domain in .burrow.yaml).</p>
-      <div class="cmd-block">
-        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">down</span></div>
-        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">down </span><span class="tv">api</span><span class="tm">          # stop a single tunnel</span></div>
-        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">status</span></div>
-        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">logs</span></div>
-        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">logs </span><span class="tv">api </span><span class="tf">--follow</span></div>
+    <details class="cmd-entry">
+      <summary class="cmd-summary">
+        <span class="cmd-name">burrow <span>down</span> / <span>status</span> / <span>logs</span></span>
+        <span class="cmd-toggle">+</span>
+      </summary>
+      <div class="cmd-body">
+        <p class="cmd-desc">Manage tunnels started with <code style="font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1px 5px">burrow up</code>. Logs are only available for named tunnels (those with a domain in .burrow.yaml).</p>
+        <div class="cmd-block">
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">down</span></div>
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">down </span><span class="tv">api</span><span class="tm">          # stop a single tunnel</span></div>
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">status</span></div>
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">logs</span></div>
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">logs </span><span class="tv">api </span><span class="tf">--follow</span></div>
+        </div>
       </div>
-    </div>
+    </details>
 
-    <div class="cmd-entry">
-      <p class="cmd-name">burrow <span>init</span></p>
-      <p class="cmd-desc">Store Cloudflare API credentials. Only needed once, and only if you want persistent named URLs on your own domain.</p>
-      <div class="cmd-block">
-        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">init</span></div>
+    <details class="cmd-entry">
+      <summary class="cmd-summary">
+        <span class="cmd-name">burrow <span>init</span></span>
+        <span class="cmd-toggle">+</span>
+      </summary>
+      <div class="cmd-body">
+        <p class="cmd-desc">Store Cloudflare API credentials. Only needed once, and only if you want persistent named URLs on your own domain.</p>
+        <div class="cmd-block">
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">init</span></div>
+        </div>
       </div>
-    </div>
+    </details>
 
-    <div class="cmd-entry">
-      <p class="cmd-name">burrow <span>doctor</span> / <span>uninstall</span></p>
-      <p class="cmd-desc">Diagnose setup issues or remove burrow and all its data from your system.</p>
-      <div class="cmd-block">
-        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">doctor</span></div>
-        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">uninstall</span></div>
+    <details class="cmd-entry">
+      <summary class="cmd-summary">
+        <span class="cmd-name">burrow <span>doctor</span> / <span>uninstall</span></span>
+        <span class="cmd-toggle">+</span>
+      </summary>
+      <div class="cmd-body">
+        <p class="cmd-desc">Diagnose setup issues or remove burrow and all its data from your system.</p>
+        <div class="cmd-block">
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">doctor</span></div>
+          <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">uninstall</span></div>
+        </div>
       </div>
-    </div>
+    </details>
 
   </div>
 </div>

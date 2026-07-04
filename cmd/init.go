@@ -53,7 +53,7 @@ func runInit(cmd *cobra.Command, args []string) error {
 	fmt.Println("    Zone / DNS / Edit")
 	fmt.Println("    Zone / Zone / Read")
 	fmt.Println()
-	fmt.Println("Account ID: " + constants.CloudflareAccountURL + " (right sidebar)")
+	fmt.Println("Account ID: " + constants.CloudflareAccountURL + " (click ⋮ next to + Add, then Copy account ID)")
 	fmt.Println()
 
 	fmt.Print("Cloudflare API Token: ")

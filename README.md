@@ -175,15 +175,16 @@ Burrow inherits WebSocket support from cloudflared. Frameworks that use WebSocke
 
 ## Cloudflare setup
 
-Only needed for persistent named URLs:
+Only needed for persistent named URLs. For a step-by-step walkthrough see the [Cloudflare setup guide](https://frank-chris.github.io/burrow/setup.html).
 
-1. [Create a Cloudflare account](https://dash.cloudflare.com/sign-up)
-2. Add your domain to Cloudflare and update your nameservers
-3. Generate an API token at [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens)
-   - Use the **Edit zone DNS** template
-   - Scope it to your domain
-4. Find your Account ID on the right sidebar at [dash.cloudflare.com](https://dash.cloudflare.com)
-5. Run `burrow init` and enter both values
+**Summary:**
+1. [Create a Cloudflare account](https://dash.cloudflare.com/sign-up) and add your domain
+2. Find your Account ID in the right sidebar at [dash.cloudflare.com](https://dash.cloudflare.com)
+3. Create a **Custom Token** at [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens) with these permissions:
+   - Account / Cloudflare Tunnel / Edit
+   - Zone / DNS / Edit
+   - Zone / Zone / Read
+4. Run `burrow init` and enter your token and Account ID
 
 ## License
 

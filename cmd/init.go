@@ -45,8 +45,15 @@ func runInit(cmd *cobra.Command, args []string) error {
 
 	fmt.Println("Setting up Burrow with Cloudflare Tunnel.")
 	fmt.Println()
-	fmt.Println("You can find your API token at: " + constants.CloudflareAPITokenURL)
-	fmt.Println("You can find your Account ID at: " + constants.CloudflareAccountURL + " (right sidebar)")
+	fmt.Println("Need help? Cloudflare setup: https://frank-chris.github.io/burrow/setup.html")
+	fmt.Println()
+	fmt.Println("API token: " + constants.CloudflareAPITokenURL)
+	fmt.Println("  Create a Custom Token (not a template) with:")
+	fmt.Println("    Account / Cloudflare Tunnel / Edit")
+	fmt.Println("    Zone / DNS / Edit")
+	fmt.Println("    Zone / Zone / Read")
+	fmt.Println()
+	fmt.Println("Account ID: " + constants.CloudflareAccountURL + " (right sidebar)")
 	fmt.Println()
 
 	fmt.Print("Cloudflare API Token: ")

@@ -14,6 +14,8 @@
   --t-green: #4DB86A;
   --t-amber: #E8A020;
   --t-blue: #7EB8F7;
+  --t-purple: #C792EA;
+  --t-peach: #F78C6C;
   --t-border: #262930;
   --mono: 'SF Mono','Cascadia Code','JetBrains Mono','Fira Code',ui-monospace,monospace;
   --sans: system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -117,11 +119,14 @@ nav{
 .term-title{flex:1;text-align:center;font-size:11px;color:#44403C;letter-spacing:.04em}
 .term-body{padding:20px 22px 24px;min-height:168px}
 .tl{display:block}
-.tc{color:var(--t-amber)}
-.tm{color:var(--t-muted)}
-.tg{color:var(--t-green)}
-.tb{color:var(--t-blue)}
-.tn{color:var(--t-text)}
+.tc{color:var(--t-amber)}   /* command prompt line */
+.ts{color:var(--t-amber)}   /* subcommand */
+.tf{color:var(--t-purple)}  /* flags */
+.tv{color:var(--t-peach)}   /* values / args */
+.tm{color:var(--t-muted)}   /* muted / comments */
+.tg{color:var(--t-green)}   /* success / [up] */
+.tb{color:var(--t-blue)}    /* URLs */
+.tn{color:var(--t-text)}    /* normal text */
 .cursor{
   display:inline-block;width:7px;height:13px;
   background:var(--t-amber);vertical-align:middle;
@@ -215,8 +220,11 @@ nav{
   font-family:var(--mono);font-size:13px;line-height:1.9;
   color:var(--t-text);
 }
-.cmd-block .tc{color:var(--t-amber)}
+.cmd-block .ts{color:var(--t-amber)}
+.cmd-block .tf{color:var(--t-purple)}
+.cmd-block .tv{color:var(--t-peach)}
 .cmd-block .tm{color:var(--t-muted)}
+.cmd-block .tb{color:var(--t-blue)}
 
 /* INSTALL SECTION */
 .install-primary{
@@ -262,8 +270,11 @@ nav{
   color:var(--t-text);
 }
 .tab-panel.on{display:block}
-.tab-panel .tc{color:var(--t-amber)}
+.tab-panel .ts{color:var(--t-amber)}
+.tab-panel .tf{color:var(--t-purple)}
+.tab-panel .tv{color:var(--t-peach)}
 .tab-panel .tm{color:var(--t-muted)}
+.tab-panel .tb{color:var(--t-blue)}
 .install-divider{
   font-size:11px;font-family:var(--mono);letter-spacing:.08em;
   text-transform:uppercase;color:var(--text-muted);
@@ -395,10 +406,10 @@ footer{
       <p class="cmd-desc">Start all tunnels defined in .burrow.yaml. Tunnels with a domain get persistent URLs; tunnels without one get a free temporary trycloudflare.com URL.</p>
       <div class="cmd-block">
         <div><span class="tm"># start all tunnels</span></div>
-        <div><span class="tc">$ burrow up</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">up</span></div>
         <br>
         <div><span class="tm"># start a single tunnel by name</span></div>
-        <div><span class="tc">$ burrow up api</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">up </span><span class="tv">api</span></div>
       </div>
     </div>
 
@@ -407,13 +418,13 @@ footer{
       <p class="cmd-desc">Share a local port instantly with a public URL. No account or config needed. Runs in the foreground; press Ctrl+C to stop.</p>
       <div class="cmd-block">
         <div><span class="tm"># share port 3000</span></div>
-        <div><span class="tc">$ burrow share 3000</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">share </span><span class="tv">3000</span></div>
         <br>
         <div><span class="tm"># password-protect the URL</span></div>
-        <div><span class="tc">$ burrow share 3000 --password secret</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">share </span><span class="tv">3000 </span><span class="tf">--password </span><span class="tv">secret</span></div>
         <br>
         <div><span class="tm"># auto-expire after 2 hours and show a QR code</span></div>
-        <div><span class="tc">$ burrow share 3000 --ttl 2h --qr</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">share </span><span class="tv">3000 </span><span class="tf">--ttl </span><span class="tv">2h </span><span class="tf">--qr</span></div>
       </div>
     </div>
 
@@ -421,10 +432,10 @@ footer{
       <p class="cmd-name">burrow <span>down</span> / <span>status</span> / <span>logs</span></p>
       <p class="cmd-desc">Manage tunnels started with <code style="font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1px 5px">burrow up</code>. Logs are only available for named tunnels (those with a domain in .burrow.yaml).</p>
       <div class="cmd-block">
-        <div><span class="tc">$ burrow down</span></div>
-        <div><span class="tc">$ burrow status</span></div>
-        <div><span class="tc">$ burrow logs</span></div>
-        <div><span class="tc">$ burrow logs api --follow</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">down</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">status</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">logs</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">logs </span><span class="tv">api </span><span class="tf">--follow</span></div>
       </div>
     </div>
 
@@ -432,7 +443,7 @@ footer{
       <p class="cmd-name">burrow <span>init</span></p>
       <p class="cmd-desc">Store Cloudflare API credentials. Only needed once, and only if you want persistent named URLs on your own domain.</p>
       <div class="cmd-block">
-        <div><span class="tc">$ burrow init</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">init</span></div>
       </div>
     </div>
 
@@ -440,8 +451,8 @@ footer{
       <p class="cmd-name">burrow <span>doctor</span> / <span>uninstall</span></p>
       <p class="cmd-desc">Diagnose setup issues or remove burrow and all its data from your system.</p>
       <div class="cmd-block">
-        <div><span class="tc">$ burrow doctor</span></div>
-        <div><span class="tc">$ burrow uninstall</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">doctor</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">uninstall</span></div>
       </div>
     </div>
 
@@ -474,14 +485,14 @@ footer{
 
   <div class="tab-panel on" id="tab-mac">
     <div><span class="tm"># Homebrew</span></div>
-    <div><span class="tc">brew tap frank-chris/tap</span></div>
-    <div><span class="tc">brew install burrow</span></div>
+    <div><span class="tm">$ </span><span class="tn">brew tap </span><span class="tv">frank-chris/tap</span></div>
+    <div><span class="tm">$ </span><span class="tn">brew install </span><span class="tv">burrow</span></div>
   </div>
 
   <div class="tab-panel" id="tab-win">
     <div><span class="tm"># Scoop</span></div>
-    <div><span class="tc">scoop bucket add frank-chris https://github.com/frank-chris/scoop-burrow</span></div>
-    <div><span class="tc">scoop install burrow</span></div>
+    <div><span class="tm">$ </span><span class="tn">scoop bucket add </span><span class="tv">frank-chris </span><span class="tb">https://github.com/frank-chris/scoop-burrow</span></div>
+    <div><span class="tm">$ </span><span class="tn">scoop install </span><span class="tv">burrow</span></div>
   </div>
 </div>
 
@@ -502,75 +513,79 @@ const cur = document.getElementById('cur');
 
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
-function makeEl(tag, cls, text){
-  const el = document.createElement(tag);
-  if(cls) el.className = cls;
-  if(text !== undefined) el.textContent = text;
-  return el;
-}
-
-async function type(text, cls){
-  const el = makeEl('span', cls);
-  tb.insertBefore(el, cur);
-  for(let c of text){
-    el.textContent += c;
-    await sleep(28 + Math.random()*28);
+// Segments: [{t: text, c: class}]
+async function typeSegments(segments){
+  const row = document.createElement('div');
+  tb.insertBefore(row, cur);
+  for(const seg of segments){
+    const el = document.createElement('span');
+    if(seg.c) el.className = seg.c;
+    row.appendChild(el);
+    for(const ch of seg.t){
+      el.textContent += ch;
+      await sleep(26 + Math.random()*26);
+    }
   }
 }
 
-function line(html, lineClass){
-  const row = makeEl('div', 'tl');
-  row.innerHTML = html;
+function line(segments){
+  const row = document.createElement('div');
+  for(const seg of segments){
+    const el = document.createElement('span');
+    if(seg.c) el.className = seg.c;
+    el.textContent = seg.t;
+    row.appendChild(el);
+  }
   tb.insertBefore(row, cur);
 }
 
-async function run(){
-  await sleep(600);
-  await type('$ burrow up', 'tc');
-  await sleep(120);
-
-  const sequences = [
-    [
-      () => line('<span class="tg">[up]</span> <span class="tn">frontend  -&gt; </span><span class="tb">https://frontend.myapp.com</span>'),
-      () => line('<span class="tg">[up]</span> <span class="tn">api       -&gt; </span><span class="tb">https://api.myapp.com</span>'),
-      () => line(''),
-      () => line('<span class="tm">All tunnels running. Press Ctrl+C to stop.</span>'),
+const demos = [
+  {
+    cmd: [
+      {t:'$ ',c:'tm'},{t:'burrow ',c:'tn'},{t:'up',c:'ts'}
     ],
-    [
-      () => line('<span class="tm">Sharing localhost:3000...</span>'),
-      () => line(''),
-      () => line('<span class="tn">Public URL: </span><span class="tb">https://swift-fox-42.trycloudflare.com</span>'),
-      () => line('<span class="tm">(copied to clipboard)</span>'),
-      () => line(''),
-      () => line('<span class="tm">Press Ctrl+C to stop.</span>'),
+    out: [
+      [{t:'  '},{t:'[up]',c:'tg'},{t:' frontend  -> ',c:'tm'},{t:'https://frontend.myapp.com',c:'tb'}],
+      [{t:'  '},{t:'[up]',c:'tg'},{t:' api       -> ',c:'tm'},{t:'https://api.myapp.com',c:'tb'}],
+      [{t:''}],
+      [{t:'All tunnels running. Press Ctrl+C to stop.',c:'tm'}],
     ]
-  ];
+  },
+  {
+    cmd: [
+      {t:'$ ',c:'tm'},{t:'burrow ',c:'tn'},{t:'share ',c:'ts'},{t:'3000 ',c:'tv'},{t:'--ttl ',c:'tf'},{t:'2h',c:'tv'}
+    ],
+    out: [
+      [{t:'Sharing localhost:3000...',c:'tm'}],
+      [{t:''}],
+      [{t:'Public URL: ',c:'tn'},{t:'https://swift-fox-42.trycloudflare.com',c:'tb'}],
+      [{t:'(copied to clipboard)',c:'tm'}],
+      [{t:''}],
+      [{t:'Auto-expires: 2h from now',c:'tm'}],
+    ]
+  }
+];
 
-  let si = 0;
-  await runSeq(sequences[si++ % sequences.length]);
+async function run(){
+  let di = 0;
+  await sleep(500);
 
   while(true){
-    await sleep(3800);
+    const demo = demos[di++ % demos.length];
+    await typeSegments(demo.cmd);
+    await sleep(140);
+    for(const segs of demo.out){
+      await sleep(200 + Math.random()*160);
+      line(segs);
+    }
+    await sleep(3600);
     tb.innerHTML = '';
     tb.appendChild(cur);
-    await sleep(300);
-
-    if(si % 2 === 1){
-      await type('$ burrow share 3000', 'tc');
-    } else {
-      await type('$ burrow up', 'tc');
-    }
-    await sleep(120);
-    await runSeq(sequences[si++ % sequences.length]);
+    await sleep(280);
   }
 }
 
-async function runSeq(seq){
-  for(const fn of seq){
-    await sleep(220 + Math.random()*180);
-    fn();
-  }
-}
+run();
 
 run();
 

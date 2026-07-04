@@ -127,12 +127,15 @@ Commit `.burrow.yaml` to your repo. Every teammate gets the same URLs every time
 | `burrow share <port>` | Quick one-off public URL (no account needed) |
 | `burrow share <port> --password <pw>` | Password-protected share |
 | `burrow share <port> --ttl 2h` | Share that expires after 2 hours |
+| `burrow share <port> --qr` | Print a QR code for the tunnel URL |
 | `burrow status` | Show status of running tunnels |
 | `burrow logs` | Show tunnel request logs |
 | `burrow logs <name>` | Show logs for a specific tunnel |
 | `burrow logs -f` | Follow logs in real time |
 | `burrow doctor` | Diagnose setup issues |
 | `burrow uninstall` | Remove all burrow data from your system |
+
+`burrow down`, `burrow status`, and `burrow logs` only apply to tunnels started with `burrow up`. `burrow share` runs in the foreground - use Ctrl+C to stop it. `burrow logs` requires a domain in `.burrow.yaml`; quick tunnels (no domain) do not write logs.
 
 ## Configuration
 

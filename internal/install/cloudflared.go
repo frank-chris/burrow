@@ -128,20 +128,33 @@ func latestRelease() (*releaseInfo, error) {
 }
 
 // parseChecksums extracts the SHA256 checksum map from the release body.
-// The release body contains a section like:
+// The release body contains a markdown section like:
 //
-//	SHA256 Checksums:
+//	### SHA256 Checksums:
+//	```
 //	cloudflared-windows-amd64.exe: 5253e66f...
+//	```
 func parseChecksums(body string) map[string]string {
 	checksums := make(map[string]string)
 	inSection := false
+	inBlock := false
 	for _, line := range strings.Split(body, "\n") {
 		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, "SHA256 Checksums") {
+		if strings.Contains(line, "SHA256 Checksums") {
 			inSection = true
 			continue
 		}
 		if !inSection {
+			continue
+		}
+		if strings.HasPrefix(line, "```") {
+			if inBlock {
+				break // closing fence - done
+			}
+			inBlock = true
+			continue
+		}
+		if !inBlock {
 			continue
 		}
 		// Lines look like "cloudflared-windows-amd64.exe: <hash>"

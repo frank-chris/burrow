@@ -25,6 +25,16 @@ func runInit(cmd *cobra.Command, args []string) error {
 	reader := bufio.NewReader(os.Stdin)
 
 	if config.AuthExists() {
+		if !install.IsInstalled() {
+			fmt.Print("Installing cloudflared...")
+			if err := install.Install(); err != nil {
+				fmt.Println(" failed.")
+				return err
+			}
+			fmt.Println(" ok.")
+			fmt.Println("Burrow is ready.")
+			return nil
+		}
 		fmt.Print("Burrow is already initialized. Overwrite existing credentials? [y/N] ")
 		answer, _ := reader.ReadString('\n')
 		if strings.ToLower(strings.TrimSpace(answer)) != "y" {

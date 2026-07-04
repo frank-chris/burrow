@@ -57,6 +57,23 @@ func LoadPIDs() ([]TunnelProcess, error) {
 	return tunnels, nil
 }
 
+func RemovePID(name string) error {
+	tunnels, err := LoadPIDs()
+	if err != nil {
+		return err
+	}
+	filtered := tunnels[:0]
+	for _, t := range tunnels {
+		if t.Name != name {
+			filtered = append(filtered, t)
+		}
+	}
+	if len(filtered) == 0 {
+		return ClearPIDs()
+	}
+	return SavePIDs(filtered)
+}
+
 func ClearPIDs() error {
 	path, err := pidsPath()
 	if err != nil {

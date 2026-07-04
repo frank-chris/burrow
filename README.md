@@ -168,7 +168,7 @@ Only needed for persistent named URLs. For a step-by-step walkthrough see the [C
 
 **Summary:**
 1. [Create a Cloudflare account](https://dash.cloudflare.com/sign-up) and add your domain
-2. Find your Account ID in the right sidebar at [dash.cloudflare.com](https://dash.cloudflare.com)
+2. Find your Account ID at [dash.cloudflare.com](https://dash.cloudflare.com) - click the &#8942; icon next to the + Add button and select "Copy account ID"
 3. Create a **Custom Token** at [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens) with these permissions:
    - Account / Cloudflare Tunnel / Edit
    - Zone / DNS / Edit

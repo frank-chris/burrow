@@ -48,24 +48,29 @@ func Install() error {
 		return nil
 	}
 
-	version, err := latestVersion()
+	release, err := latestRelease()
 	if err != nil {
 		return fmt.Errorf("could not determine latest cloudflared version: %w", err)
 	}
 
 	binaryName := platformBinaryName()
-	downloadURL := fmt.Sprintf("%s/%s/%s", constants.CloudflaredGitHubBase, version, binaryName)
-	checksumURL := downloadURL + ".sha256"
+	downloadURL := fmt.Sprintf("%s/%s/%s", constants.CloudflaredGitHubBase, release.version, binaryName)
 
-	fmt.Printf("  Downloading cloudflared %s...\n", version)
+	fmt.Printf("  Downloading cloudflared %s...\n", release.version)
 
 	data, err := downloadFile(downloadURL)
 	if err != nil {
 		return fmt.Errorf("could not download cloudflared: %w", err)
 	}
 
-	if err := verifyChecksum(data, checksumURL); err != nil {
-		return fmt.Errorf("checksum verification failed: %w", err)
+	if expected, ok := release.checksums[binaryName]; ok {
+		actual := sha256.Sum256(data)
+		actualHex := hex.EncodeToString(actual[:])
+		if !strings.EqualFold(actualHex, expected) {
+			return fmt.Errorf("checksum mismatch for %s: expected %s, got %s", binaryName, expected, actualHex)
+		}
+	} else {
+		fmt.Println("  Warning: could not verify checksum (not found in release notes). Proceeding anyway.")
 	}
 
 	binPath, err := BinaryPath()
@@ -85,31 +90,72 @@ func Install() error {
 	return nil
 }
 
-func latestVersion() (string, error) {
+type releaseInfo struct {
+	version   string
+	checksums map[string]string // filename -> sha256 hex
+}
+
+func latestRelease() (*releaseInfo, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
 	req, err := http.NewRequest(http.MethodGet, constants.CloudflaredReleasesURL, nil)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	req.Header.Set("Accept", "application/vnd.github+json")
 	req.Header.Set("User-Agent", "burrow")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("could not reach GitHub API: %w", err)
+		return nil, fmt.Errorf("could not reach GitHub API: %w", err)
 	}
 	defer resp.Body.Close()
 
 	var release struct {
 		TagName string `json:"tag_name"`
+		Body    string `json:"body"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
-		return "", fmt.Errorf("could not parse GitHub release response")
+		return nil, fmt.Errorf("could not parse GitHub release response")
 	}
 	if release.TagName == "" {
-		return "", fmt.Errorf("empty version in GitHub release response")
+		return nil, fmt.Errorf("empty version in GitHub release response")
 	}
-	return release.TagName, nil
+
+	return &releaseInfo{
+		version:   release.TagName,
+		checksums: parseChecksums(release.Body),
+	}, nil
+}
+
+// parseChecksums extracts the SHA256 checksum map from the release body.
+// The release body contains a section like:
+//
+//	SHA256 Checksums:
+//	cloudflared-windows-amd64.exe: 5253e66f...
+func parseChecksums(body string) map[string]string {
+	checksums := make(map[string]string)
+	inSection := false
+	for _, line := range strings.Split(body, "\n") {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "SHA256 Checksums") {
+			inSection = true
+			continue
+		}
+		if !inSection {
+			continue
+		}
+		// Lines look like "cloudflared-windows-amd64.exe: <hash>"
+		parts := strings.SplitN(line, ": ", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		filename := strings.TrimSpace(parts[0])
+		hash := strings.TrimSpace(parts[1])
+		if filename != "" && len(hash) == 64 {
+			checksums[filename] = hash
+		}
+	}
+	return checksums
 }
 
 func platformBinaryName() string {
@@ -133,25 +179,4 @@ func downloadFile(url string) ([]byte, error) {
 	}
 
 	return io.ReadAll(resp.Body)
-}
-
-func verifyChecksum(data []byte, checksumURL string) error {
-	checksumData, err := downloadFile(checksumURL)
-	if err != nil {
-		return fmt.Errorf("could not download checksum file: %w", err)
-	}
-
-	// Checksum files are formatted as "hash  filename" or just "hash"
-	expected := strings.Fields(string(checksumData))
-	if len(expected) == 0 {
-		return fmt.Errorf("checksum file is empty")
-	}
-
-	actual := sha256.Sum256(data)
-	actualHex := hex.EncodeToString(actual[:])
-
-	if !strings.EqualFold(actualHex, expected[0]) {
-		return fmt.Errorf("checksum mismatch: expected %s, got %s", expected[0], actualHex)
-	}
-	return nil
 }

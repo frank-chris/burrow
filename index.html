@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>burrow - Persistent tunnel URLs for dev teams</title>
+<style>
+:root {
+  --bg: #F5F1EA;
+  --surface: #EDE9E1;
+  --border: #D0C9BE;
+  --text: #1A1714;
+  --text-muted: #7A7060;
+  --accent: #B56800;
+  --accent-fg: #fff;
+  --t-bg: #111318;
+  --t-text: #E2DDD6;
+  --t-muted: #5A5550;
+  --t-green: #4DB86A;
+  --t-amber: #E8A020;
+  --t-blue: #7EB8F7;
+  --t-purple: #C792EA;
+  --t-peach: #F78C6C;
+  --t-border: #262930;
+  --mono: 'SF Mono','Cascadia Code','JetBrains Mono','Fira Code',ui-monospace,monospace;
+  --sans: system-ui,-apple-system,'Segoe UI',sans-serif;
+  --w: 840px;
+  --r: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111318;
+    --surface: #1A1D24;
+    --border: #262930;
+    --text: #E2DDD6;
+    --text-muted: #7A7570;
+    --accent: #E8A020;
+    --accent-fg: #111318;
+    --t-bg: #0C0E12;
+    --t-border: #1E2128;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111318;
+  --surface: #1A1D24;
+  --border: #262930;
+  --text: #E2DDD6;
+  --text-muted: #7A7570;
+  --accent: #E8A020;
+  --accent-fg: #111318;
+  --t-bg: #0C0E12;
+  --t-border: #1E2128;
+}
+:root[data-theme="light"] {
+  --bg: #F5F1EA;
+  --surface: #EDE9E1;
+  --border: #D0C9BE;
+  --text: #1A1714;
+  --text-muted: #7A7060;
+  --accent: #B56800;
+  --accent-fg: #fff;
+  --t-bg: #111318;
+  --t-border: #262930;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* NAV */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  max-width:var(--w);margin:0 auto;
+  padding:clamp(14px,3vw,22px) clamp(16px,5vw,28px);
+}
+.logo{font-family:var(--mono);font-size:17px;font-weight:600;letter-spacing:-0.02em}
+.logo-dot{color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:clamp(16px,4vw,28px)}
+.nav-link{font-size:14px;color:var(--text-muted);transition:color .15s}
+.nav-link:hover{color:var(--text)}
+.gh-link{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--text-muted);transition:color .15s}
+.gh-link:hover{color:var(--text)}
+.gh-link svg{flex-shrink:0}
+
+/* HERO */
+.hero{
+  max-width:var(--w);margin:0 auto;
+  padding:clamp(32px,6vw,56px) clamp(16px,5vw,28px) clamp(40px,6vw,52px);
+  text-align:center;
+}
+.hero h1{
+  font-family:var(--mono);
+  font-size:clamp(28px,7vw,58px);
+  font-weight:600;letter-spacing:-0.03em;line-height:1.08;
+  text-wrap:balance;margin-bottom:20px;
+}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{
+  font-size:clamp(15px,2.5vw,17px);color:var(--text-muted);
+  max-width:480px;margin:0 auto 40px;
+  text-wrap:balance;line-height:1.55;
+}
+
+/* TERMINAL */
+.term-wrap{
+  background:var(--t-bg);
+  border:1px solid var(--t-border);
+  border-radius:10px;
+  overflow:hidden;
+  font-family:var(--mono);font-size:clamp(11px,2vw,13.5px);line-height:1.75;
+  text-align:left;
+  box-shadow:0 32px 80px rgba(0,0,0,.35);
+  margin-bottom:40px;
+}
+.term-bar{
+  display:flex;align-items:center;gap:6px;
+  padding:9px 14px;
+  background:rgba(255,255,255,.03);
+  border-bottom:1px solid var(--t-border);
+}
+.dot{width:11px;height:11px;border-radius:50%}
+.dot-r{background:#FF5F57}.dot-y{background:#FEBC2E}.dot-g{background:#28C840}
+.term-title{flex:1;text-align:center;font-size:11px;color:#44403C;letter-spacing:.04em}
+.term-body{padding:clamp(14px,3vw,20px) clamp(14px,3vw,22px);height:210px;overflow-x:auto;overflow-y:hidden}
+.tc{color:var(--t-amber)}
+.ts{color:var(--t-amber)}
+.tf{color:var(--t-purple)}
+.tv{color:var(--t-peach)}
+.tm{color:var(--t-muted)}
+.tg{color:var(--t-green)}
+.tb{color:var(--t-blue)}
+.tn{color:var(--t-text)}
+.cursor{
+  display:inline-block;width:7px;height:13px;
+  background:var(--t-amber);vertical-align:middle;
+  margin-left:1px;
+  animation:blink 1.1s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* INSTALL STRIP */
+.install-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.install-cmd{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--t-bg);border:1px solid var(--t-border);
+  border-radius:6px;padding:10px 16px;
+  font-family:var(--mono);font-size:clamp(11px,2.5vw,13px);color:var(--t-text);
+  max-width:100%;overflow-x:auto;white-space:nowrap;
+}
+.copy-btn{
+  background:none;border:none;cursor:pointer;
+  color:var(--t-muted);padding:0;flex-shrink:0;
+  display:flex;align-items:center;
+  transition:color .15s;
+}
+.copy-btn:hover{color:var(--t-amber)}
+.install-more{font-size:13px;color:var(--text-muted)}
+.install-more a{color:var(--accent);border-bottom:1px solid transparent;transition:border-color .15s}
+.install-more a:hover{border-color:var(--accent)}
+
+/* SECTION */
+.section{
+  border-top:1px solid var(--border);
+  max-width:var(--w);margin:0 auto;
+  padding:clamp(40px,7vw,60px) clamp(16px,5vw,28px);
+}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:10px;
+}
+.section-h{
+  font-family:var(--mono);
+  font-size:clamp(20px,4vw,30px);
+  font-weight:600;letter-spacing:-0.025em;
+  text-wrap:balance;margin-bottom:14px;
+}
+.section-p{font-size:16px;color:var(--text-muted);max-width:520px;line-height:1.65}
+
+/* BEFORE/AFTER */
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:36px}
+.split-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:clamp(16px,3vw,24px);
+}
+.split-label{
+  font-size:11px;font-family:var(--mono);letter-spacing:.09em;
+  text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;
+}
+.split-title{font-size:16px;font-weight:600;letter-spacing:-.015em;margin-bottom:8px}
+.split-body{font-size:14px;color:var(--text-muted);line-height:1.6}
+.split-card code{
+  font-family:var(--mono);font-size:12.5px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:4px;padding:1px 6px;color:var(--text);
+}
+
+/* FEATURES */
+.features{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:1px;margin-top:36px;
+  border:1px solid var(--border);border-radius:var(--r);
+  overflow:hidden;background:var(--border);
+}
+.feat{background:var(--bg);padding:clamp(16px,3vw,22px) clamp(14px,3vw,20px)}
+.feat-title{font-size:14px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
+.feat-body{font-size:13px;color:var(--text-muted);line-height:1.55}
+.feat-body code{
+  font-family:var(--mono);font-size:12px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:3px;padding:1px 5px;
+}
+
+/* COMMANDS */
+.cmd-list{margin-top:40px;display:flex;flex-direction:column;gap:32px}
+.cmd-name{
+  font-family:var(--mono);font-size:clamp(14px,2.5vw,16px);font-weight:600;
+  letter-spacing:-.02em;color:var(--text);margin-bottom:4px;
+}
+.cmd-name span{color:var(--accent)}
+.cmd-desc{font-size:14px;color:var(--text-muted);margin-bottom:12px;line-height:1.5}
+.cmd-block{
+  background:var(--t-bg);border:1px solid var(--t-border);
+  border-radius:var(--r);padding:clamp(12px,2.5vw,16px) clamp(14px,3vw,20px);
+  font-family:var(--mono);font-size:clamp(11.5px,2vw,13px);line-height:1.9;
+  color:var(--t-text);overflow-x:auto;
+}
+.cmd-block .ts{color:var(--t-amber)}
+.cmd-block .tf{color:var(--t-purple)}
+.cmd-block .tv{color:var(--t-peach)}
+.cmd-block .tm{color:var(--t-muted)}
+.cmd-block .tb{color:var(--t-blue)}
+
+/* INSTALL SECTION */
+.install-primary{
+  margin-top:32px;
+  background:var(--t-bg);border:1px solid var(--t-border);
+  border-radius:var(--r);padding:clamp(14px,3vw,20px) clamp(16px,4vw,24px);
+  font-family:var(--mono);font-size:clamp(11px,2.5vw,13.5px);
+  color:var(--t-text);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  overflow-x:auto;white-space:nowrap;
+}
+.install-primary-copy{
+  background:none;border:1px solid var(--t-border);
+  border-radius:5px;padding:6px 12px;
+  font-family:var(--mono);font-size:12px;
+  color:var(--t-muted);cursor:pointer;
+  display:flex;align-items:center;gap:6px;
+  transition:all .15s;flex-shrink:0;
+}
+.install-primary-copy:hover{color:var(--t-amber);border-color:var(--t-amber)}
+.install-os-note{font-size:13px;color:var(--text-muted);margin-top:10px}
+.install-os-note a{color:var(--accent);border-bottom:1px solid transparent;transition:border-color .15s}
+.install-os-note a:hover{border-color:var(--accent)}
+
+.tabs-row{display:flex;gap:2px;margin-top:32px;overflow-x:auto;padding-bottom:1px}
+.tab-btn{
+  font-family:var(--mono);font-size:clamp(11px,2vw,13px);
+  padding:8px clamp(10px,2.5vw,18px);background:var(--surface);
+  border:1px solid var(--border);border-bottom:none;
+  border-radius:6px 6px 0 0;white-space:nowrap;
+  cursor:pointer;color:var(--text-muted);
+  transition:all .15s;
+}
+.tab-btn.on{background:var(--t-bg);color:var(--t-text);border-color:var(--t-border)}
+.tab-panel{
+  display:none;
+  background:var(--t-bg);
+  border:1px solid var(--t-border);
+  border-radius:0 var(--r) var(--r) var(--r);
+  padding:clamp(14px,3vw,22px) clamp(14px,3vw,24px);
+  font-family:var(--mono);font-size:clamp(11px,2vw,13px);line-height:2;
+  color:var(--t-text);overflow-x:auto;
+}
+.tab-panel.on{display:block}
+.tab-panel .ts{color:var(--t-amber)}
+.tab-panel .tf{color:var(--t-purple)}
+.tab-panel .tv{color:var(--t-peach)}
+.tab-panel .tm{color:var(--t-muted)}
+.tab-panel .tb{color:var(--t-blue)}
+.install-divider{
+  font-size:11px;font-family:var(--mono);letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text-muted);
+  margin-top:32px;margin-bottom:8px;
+}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--border);
+  max-width:var(--w);margin:0 auto;
+  padding:clamp(20px,4vw,28px) clamp(16px,5vw,28px);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
+  font-size:13px;color:var(--text-muted);
+}
+.foot-logo{font-family:var(--mono);font-weight:600;font-size:15px;color:var(--text)}
+.foot-links{display:flex;gap:20px}
+.foot-link{color:var(--text-muted);transition:color .15s}
+.foot-link:hover{color:var(--text)}
+
+/* hide nav text links on small screens, keep GitHub */
+@media(max-width:500px){.nav-link{display:none}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">burrow<span class="logo-dot">.</span></a>
+  <div class="nav-right">
+    <a href="#how" class="nav-link">Docs</a>
+    <a href="#install" class="nav-link">Install</a>
+    <a href="https://github.com/frank-chris/burrow" class="gh-link" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/>
+      </svg>
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Tunnel URLs that<br><em>stay put</em></h1>
+  <p>Named, persistent tunnel URLs defined in code, so webhooks survive restarts and your team shares one config, not a Slack thread of changing URLs.</p>
+
+  <div class="term-wrap">
+    <div class="term-bar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <span class="term-title">zsh</span>
+    </div>
+    <div class="term-body" id="term-body"><span class="cursor" id="cur"></span></div>
+  </div>
+
+  <div class="install-row">
+    <div class="install-cmd">
+      <span class="tn">curl </span><span class="tf">-sSL </span><span class="tb">https://frank-chris.github.io/burrow/install.sh</span><span class="tm"> | </span><span class="tn">sh</span>
+      <button class="copy-btn" id="copy-btn" onclick="doCopy()" title="Copy to clipboard">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <p class="install-more" style="margin-top:12px">
+    macOS and Linux. <a href="#install">Windows? Use Scoop.</a>
+  </p>
+</div>
+
+<!-- PROBLEM -->
+<div class="section" id="why">
+  <p class="eyebrow">The problem</p>
+  <h2 class="section-h">Every restart breaks something</h2>
+  <p class="section-p">Random tunnel URLs mean reconfiguring webhooks, resending links to teammates, and losing the session state you had in your browser tab.</p>
+  <div class="split">
+    <div class="split-card">
+      <p class="split-label">Without burrow</p>
+      <p class="split-title">New URL on every restart</p>
+      <p class="split-body">Your payment webhook points to <code>abc-xyz.trycloudflare.com</code>. It changes. You update it. It changes again tomorrow.</p>
+    </div>
+    <div class="split-card">
+      <p class="split-label">With burrow</p>
+      <p class="split-title">Same URL, every time</p>
+      <p class="split-body">Define tunnels in <code>.burrow.yaml</code>, commit it. Every teammate runs <code>burrow up</code> and gets the same domains, every time.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="section">
+  <p class="eyebrow">Features</p>
+  <h2 class="section-h">Everything a dev team needs</h2>
+  <div class="features">
+    <div class="feat">
+      <p class="feat-title">Persistent named URLs</p>
+      <p class="feat-body">Domains defined in <code>.burrow.yaml</code> stay the same across restarts. Commit the file, share with the team.</p>
+    </div>
+    <div class="feat">
+      <p class="feat-title">No account needed</p>
+      <p class="feat-body">Quick tunnels via trycloudflare.com work instantly. No signup, no config. Just run <code>burrow share 3000</code>.</p>
+    </div>
+    <div class="feat">
+      <p class="feat-title">Password protection</p>
+      <p class="feat-body">Lock a shared URL behind a password with <code>--password</code>. Basic auth, no extra setup required.</p>
+    </div>
+    <div class="feat">
+      <p class="feat-title">Auto-expiry</p>
+      <p class="feat-body">Set a TTL on any share tunnel. It shuts itself down after the duration with no dangling processes.</p>
+    </div>
+    <div class="feat">
+      <p class="feat-title">Multi-tunnel</p>
+      <p class="feat-body">Frontend, API, docs: start all of them in parallel with a single <code>burrow up</code>. Each gets its own URL.</p>
+    </div>
+    <div class="feat">
+      <p class="feat-title">Port health check</p>
+      <p class="feat-body">Warns before starting if nothing is listening on the target port. Catches the "is my server even running?" mistake early.</p>
+    </div>
+  </div>
+</div>
+
+<!-- COMMANDS -->
+<div class="section" id="how">
+  <p class="eyebrow">Reference</p>
+  <h2 class="section-h">Commands</h2>
+  <p class="section-p">Everything burrow can do.</p>
+
+  <div class="cmd-list">
+
+    <div class="cmd-entry">
+      <p class="cmd-name">burrow <span>up</span></p>
+      <p class="cmd-desc">Start all tunnels defined in .burrow.yaml. Tunnels with a domain get persistent URLs; tunnels without one get a free temporary trycloudflare.com URL.</p>
+      <div class="cmd-block">
+        <div><span class="tm"># start all tunnels</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">up</span></div>
+        <br>
+        <div><span class="tm"># start a single tunnel by name</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">up </span><span class="tv">api</span></div>
+      </div>
+    </div>
+
+    <div class="cmd-entry">
+      <p class="cmd-name">burrow <span>share</span></p>
+      <p class="cmd-desc">Share a local port instantly with a public URL. No account or config needed. Runs in the foreground; press Ctrl+C to stop.</p>
+      <div class="cmd-block">
+        <div><span class="tm"># share port 3000</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">share </span><span class="tv">3000</span></div>
+        <br>
+        <div><span class="tm"># password-protect the URL</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">share </span><span class="tv">3000 </span><span class="tf">--password </span><span class="tv">secret</span></div>
+        <br>
+        <div><span class="tm"># auto-expire after 2 hours and show a QR code</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">share </span><span class="tv">3000 </span><span class="tf">--ttl </span><span class="tv">2h </span><span class="tf">--qr</span></div>
+      </div>
+    </div>
+
+    <div class="cmd-entry">
+      <p class="cmd-name">burrow <span>down</span> / <span>status</span> / <span>logs</span></p>
+      <p class="cmd-desc">Manage tunnels started with <code style="font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1px 5px">burrow up</code>. Logs are only available for named tunnels (those with a domain in .burrow.yaml).</p>
+      <div class="cmd-block">
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">down</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">status</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">logs</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">logs </span><span class="tv">api </span><span class="tf">--follow</span></div>
+      </div>
+    </div>
+
+    <div class="cmd-entry">
+      <p class="cmd-name">burrow <span>init</span></p>
+      <p class="cmd-desc">Store Cloudflare API credentials. Only needed once, and only if you want persistent named URLs on your own domain.</p>
+      <div class="cmd-block">
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">init</span></div>
+      </div>
+    </div>
+
+    <div class="cmd-entry">
+      <p class="cmd-name">burrow <span>doctor</span> / <span>uninstall</span></p>
+      <p class="cmd-desc">Diagnose setup issues or remove burrow and all its data from your system.</p>
+      <div class="cmd-block">
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">doctor</span></div>
+        <div><span class="tm">$ </span><span class="tn">burrow </span><span class="ts">uninstall</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- INSTALL -->
+<div class="section" id="install">
+  <p class="eyebrow">Install</p>
+  <h2 class="section-h">Up in under a minute</h2>
+  <p class="section-p">cloudflared downloads automatically on first use. No manual setup needed for quick tunnels.</p>
+
+  <div class="install-primary">
+    <span><span class="tm">$ </span><span class="tn">curl </span><span class="tf">-sSL </span><span class="tb">https://frank-chris.github.io/burrow/install.sh</span><span class="tm"> | </span><span class="tn">sh</span></span>
+    <button class="install-primary-copy" id="curl-copy-btn" onclick="copyCurl()" title="Copy">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+      </svg>
+      copy
+    </button>
+  </div>
+  <p class="install-os-note">macOS and Linux. <a href="#win-install">Windows? Use Scoop.</a></p>
+
+  <p class="install-divider" style="margin-top:40px">Other options</p>
+
+  <div class="tabs-row">
+    <button class="tab-btn on" onclick="tab('win',this)" id="win-install">Windows (Scoop)</button>
+    <button class="tab-btn" onclick="tab('mac',this)">macOS (Homebrew)</button>
+  </div>
+
+  <div class="tab-panel on" id="tab-win">
+    <div><span class="tm"># Scoop</span></div>
+    <div><span class="tm">$ </span><span class="tn">scoop bucket add </span><span class="tv">frank-chris </span><span class="tb">https://github.com/frank-chris/scoop-burrow</span></div>
+    <div><span class="tm">$ </span><span class="tn">scoop install </span><span class="tv">burrow</span></div>
+  </div>
+
+  <div class="tab-panel" id="tab-mac">
+    <div><span class="tm"># Homebrew</span></div>
+    <div><span class="tm">$ </span><span class="tn">brew tap </span><span class="tv">frank-chris/tap</span></div>
+    <div><span class="tm">$ </span><span class="tn">brew install </span><span class="tv">burrow</span></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="foot-logo">burrow</span>
+  <div class="foot-links">
+    <a href="https://github.com/frank-chris/burrow" class="foot-link" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/frank-chris/burrow/releases" class="foot-link" target="_blank" rel="noopener">Releases</a>
+    <a href="https://github.com/frank-chris/burrow/blob/main/LICENSE" class="foot-link" target="_blank" rel="noopener">MIT License</a>
+  </div>
+</footer>
+
+<script>
+// Terminal animation
+const tb = document.getElementById('term-body');
+
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+function cursor(){ return document.getElementById('cur'); }
+
+function clearTerminal(){
+  tb.innerHTML = '<span class="cursor" id="cur"></span>';
+}
+
+async function typeSegments(segments){
+  const row = document.createElement('div');
+  tb.insertBefore(row, cursor());
+  for(const seg of segments){
+    const el = document.createElement('span');
+    if(seg.c) el.className = seg.c;
+    row.appendChild(el);
+    for(const ch of seg.t){
+      el.textContent += ch;
+      await sleep(26 + Math.random()*26);
+    }
+  }
+}
+
+function line(segments){
+  const row = document.createElement('div');
+  for(const seg of segments){
+    const el = document.createElement('span');
+    if(seg.c) el.className = seg.c;
+    el.textContent = seg.t;
+    row.appendChild(el);
+  }
+  tb.insertBefore(row, cursor());
+}
+
+const demos = [
+  {
+    cmd: [
+      {t:'$ ',c:'tm'},{t:'burrow ',c:'tn'},{t:'up',c:'ts'}
+    ],
+    out: [
+      [{t:'Starting tunnels...',c:'tm'}],
+      [{t:'  '},{t:'[up]',c:'tg'},{t:' frontend -> ',c:'tm'},{t:'https://frontend.myapp.com',c:'tb'}],
+      [{t:'  '},{t:'[up]',c:'tg'},{t:' api -> ',c:'tm'},{t:'https://api.myapp.com',c:'tb'}],
+      [{t:''}],
+      [{t:'All tunnels running. Press Ctrl+C to stop.',c:'tm'}],
+    ]
+  },
+  {
+    cmd: [
+      {t:'$ ',c:'tm'},{t:'burrow ',c:'tn'},{t:'share ',c:'ts'},{t:'3000 ',c:'tv'},{t:'--ttl ',c:'tf'},{t:'2h',c:'tv'}
+    ],
+    out: [
+      [{t:'Sharing localhost:3000...',c:'tm'}],
+      [{t:''}],
+      [{t:'Public URL: ',c:'tn'},{t:'https://swift-fox-42.trycloudflare.com',c:'tb'}],
+      [{t:'(copied to clipboard)',c:'tm'}],
+      [{t:''}],
+      [{t:'Auto-expires: 2h from now',c:'tm'}],
+    ]
+  }
+];
+
+async function run(){
+  let di = 0;
+  await sleep(500);
+
+  while(true){
+    const demo = demos[di++ % demos.length];
+    await typeSegments(demo.cmd);
+    await sleep(140);
+    for(const segs of demo.out){
+      await sleep(200 + Math.random()*160);
+      line(segs);
+    }
+    await sleep(3600);
+    clearTerminal();
+    await sleep(280);
+  }
+}
+
+run();
+
+// Tabs
+function tab(name, btn){
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tab-'+name).classList.add('on');
+}
+
+// Copy curl install
+function copyCurl(){
+  navigator.clipboard.writeText('curl -sSL https://frank-chris.github.io/burrow/install.sh | sh').then(() => {
+    const btn = document.getElementById('curl-copy-btn');
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> copied';
+    btn.style.color = 'var(--t-amber)';
+    btn.style.borderColor = 'var(--t-amber)';
+    setTimeout(() => {
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> copy';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 2000);
+  });
+}
+
+// Copy
+function doCopy(){
+  navigator.clipboard.writeText('curl -sSL https://frank-chris.github.io/burrow/install.sh | sh').then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    btn.style.color = 'var(--accent)';
+    setTimeout(() => {
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+      btn.style.color = '';
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>

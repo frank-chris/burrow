@@ -33,23 +33,12 @@ For persistent named URLs (`burrow up` with domains):
 
 ## Installation
 
-### macOS (Homebrew)
+### macOS and Linux
 ```bash
-brew tap frank-chris/tap
-brew install burrow
+curl -sSL https://frank-chris.github.io/burrow/install.sh | sh
 ```
 
-### Linux
-```bash
-curl -sSL https://github.com/frank-chris/burrow/releases/latest/download/burrow_linux_amd64.tar.gz | tar -xz
-sudo mv burrow /usr/local/bin/
-```
-
-For ARM64:
-```bash
-curl -sSL https://github.com/frank-chris/burrow/releases/latest/download/burrow_linux_arm64.tar.gz | tar -xz
-sudo mv burrow /usr/local/bin/
-```
+Also available via Homebrew: `brew tap frank-chris/tap && brew install burrow`
 
 ### Windows (Scoop)
 ```powershell
@@ -57,8 +46,8 @@ scoop bucket add frank-chris https://github.com/frank-chris/scoop-burrow
 scoop install burrow
 ```
 
-### Windows (manual)
-Download `burrow_windows_amd64.zip` from the [latest release](https://github.com/frank-chris/burrow/releases/latest), extract, and add to your PATH.
+### GitHub Releases
+Download a prebuilt binary for any platform from the [releases page](https://github.com/frank-chris/burrow/releases/latest).
 
 ### Build from source
 ```bash

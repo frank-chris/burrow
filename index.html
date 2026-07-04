@@ -13,6 +13,9 @@
   --text-muted: #7A7060;
   --accent: #B56800;
   --accent-fg: #fff;
+  --accent-tint: rgba(181,104,0,.06);
+  --problem-tint: rgba(160,40,20,.06);
+  --problem-label: #943428;
   --t-bg: #111318;
   --t-text: #E2DDD6;
   --t-muted: #5A5550;
@@ -37,6 +40,9 @@
     --text-muted: #7A7570;
     --accent: #E8A020;
     --accent-fg: #111318;
+    --accent-tint: rgba(232,160,32,.07);
+    --problem-tint: rgba(210,70,50,.08);
+    --problem-label: #BF6050;
     --t-bg: #0C0E12;
     --t-border: #1E2128;
   }
@@ -49,6 +55,9 @@
   --text-muted: #7A7570;
   --accent: #E8A020;
   --accent-fg: #111318;
+  --accent-tint: rgba(232,160,32,.07);
+  --problem-tint: rgba(210,70,50,.08);
+  --problem-label: #BF6050;
   --t-bg: #0C0E12;
   --t-border: #1E2128;
 }
@@ -60,6 +69,9 @@
   --text-muted: #7A7060;
   --accent: #B56800;
   --accent-fg: #fff;
+  --accent-tint: rgba(181,104,0,.06);
+  --problem-tint: rgba(160,40,20,.06);
+  --problem-label: #943428;
   --t-bg: #111318;
   --t-border: #262930;
 }
@@ -185,6 +197,10 @@ nav{
   background:var(--surface);border:1px solid var(--border);
   border-radius:var(--r);padding:clamp(16px,3vw,24px);
 }
+.split-card-accent{border-color:var(--accent);background:var(--accent-tint)}
+.split-card-accent .split-label{color:var(--accent)}
+.split-card-problem{background:var(--problem-tint)}
+.split-card-problem .split-label{color:var(--problem-label)}
 .split-label{
   font-size:11px;font-family:var(--mono);letter-spacing:.09em;
   text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;
@@ -385,19 +401,19 @@ footer{
   <h2 class="section-h">Every restart breaks something</h2>
   <p class="section-p">Random tunnel URLs mean reconfiguring webhooks, resending links to teammates, and losing the session state you had in your browser tab.</p>
   <div class="split">
-    <div class="split-card">
+    <div class="split-card split-card-problem">
       <p class="split-label">ngrok / random tunnels</p>
       <p class="split-title">New URL on every restart</p>
       <p class="split-body">Your payment webhook points to <code>abc-xyz.trycloudflare.com</code>. It changes. You update it. It changes again tomorrow. Persistent URLs on ngrok start at $8-20/month per user - 10-20x the cost of a domain.</p>
     </div>
-    <div class="split-card">
+    <div class="split-card split-card-problem">
       <p class="split-label">raw cloudflared</p>
       <p class="split-title">Right infrastructure, rough setup</p>
       <p class="split-body">7 manual steps, credentials files that can't be committed, no process management, and each teammate configures their own setup from scratch.</p>
     </div>
   </div>
   <div class="split" style="margin-top:16px">
-    <div class="split-card">
+    <div class="split-card split-card-accent">
       <p class="split-label">With burrow</p>
       <p class="split-title">One committed file, same URLs for everyone</p>
       <p class="split-body">Define tunnels in <code>.burrow.yaml</code> and commit it. DNS is created automatically. Every credentialed teammate runs <code>burrow up</code> and gets the exact same domains, every time. ~$10/yr for a domain, shared across the whole team - no per-seat fees.</p>

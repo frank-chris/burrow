@@ -7,6 +7,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/frank-chris/burrow/internal/clipboard"
 	"github.com/frank-chris/burrow/internal/config"
 	"github.com/frank-chris/burrow/internal/provider/cloudflare"
 	"github.com/frank-chris/burrow/internal/state"
@@ -78,6 +79,7 @@ func runUp(cmd *cobra.Command, args []string) error {
 	if len(quick) > 0 {
 		fmt.Println("Starting quick tunnels...")
 		for _, t := range quick {
+			tunnel.WarnIfPortClosed(t.Port)
 			qt, err := tunnel.StartQuickTunnel(t.Port, tunnel.QuickOptions{})
 			if err != nil {
 				stopQuick(quickProcs)
@@ -118,6 +120,11 @@ func runUp(cmd *cobra.Command, args []string) error {
 		for i, t := range quick {
 			fmt.Printf("  [up] %s -> %s\n", t.Name, urls[i])
 			allPIDs = append(allPIDs, state.TunnelProcess{Name: t.Name, PID: quickProcs[i].PID()})
+			if len(cfg.Tunnels) == 1 {
+				if err := clipboard.Copy(urls[i]); err == nil {
+					fmt.Println("  (copied to clipboard)")
+				}
+			}
 		}
 	}
 

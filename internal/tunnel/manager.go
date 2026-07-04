@@ -54,6 +54,7 @@ func (m *Manager) start(t config.TunnelConfig) error {
 		return fmt.Errorf("could not get token for tunnel %q: %w", t.Name, err)
 	}
 
+	WarnIfPortClosed(t.Port)
 	proc, err := StartProcess(t.Name, token)
 	if err != nil {
 		return err

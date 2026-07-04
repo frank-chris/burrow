@@ -15,6 +15,16 @@ import (
 	"github.com/frank-chris/burrow/internal/install"
 )
 
+// WarnIfPortClosed prints a warning if nothing is listening on the given port.
+func WarnIfPortClosed(port int) {
+	conn, err := net.DialTimeout("tcp", fmt.Sprintf("localhost:%d", port), time.Second)
+	if err != nil {
+		fmt.Printf("  Warning: nothing appears to be listening on port %d. Start your app first.\n", port)
+		return
+	}
+	conn.Close()
+}
+
 type QuickOptions struct {
 	Password string
 	TTL      time.Duration

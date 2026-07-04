@@ -8,13 +8,16 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/frank-chris/burrow/internal/clipboard"
 	"github.com/frank-chris/burrow/internal/tunnel"
+	"github.com/mdp/qrterminal/v3"
 	"github.com/spf13/cobra"
 )
 
 var (
 	sharePassword string
 	shareTTL      string
+	shareQR       bool
 )
 
 var shareCmd = &cobra.Command{
@@ -28,6 +31,7 @@ var shareCmd = &cobra.Command{
 func init() {
 	shareCmd.Flags().StringVarP(&sharePassword, "password", "p", "", "Require a password to access the tunnel")
 	shareCmd.Flags().StringVar(&shareTTL, "ttl", "", "Auto-expire the tunnel after this duration (e.g. 30m, 2h)")
+	shareCmd.Flags().BoolVar(&shareQR, "qr", false, "Print a QR code for the tunnel URL")
 }
 
 func runShare(cmd *cobra.Command, args []string) error {
@@ -56,6 +60,7 @@ func runShare(cmd *cobra.Command, args []string) error {
 		TTL:      ttl,
 	}
 
+	tunnel.WarnIfPortClosed(port)
 	fmt.Printf("Sharing localhost:%d...\n\n", port)
 
 	qt, err := tunnel.StartQuickTunnel(port, opts)
@@ -69,6 +74,13 @@ func runShare(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Println("Public URL:", url)
+	if err := clipboard.Copy(url); err == nil {
+		fmt.Println("(copied to clipboard)")
+	}
+	if shareQR {
+		fmt.Println()
+		qrterminal.Generate(url, qrterminal.L, os.Stdout)
+	}
 	fmt.Println()
 
 	if sharePassword != "" {
